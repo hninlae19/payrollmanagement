@@ -795,6 +795,9 @@ class AdminController extends Controller {
                         $excludeId = ($_POST['action'] === 'edit') ? $_POST['id'] : null;
                         $existing = $overtimeModel->getAssignmentsByDate($empId, $otDate, $excludeId);
                         foreach ($existing as $ex) {
+                            $inactiveStatuses = ['Cancelled', 'Rejected', 'NoOT', 'No OT', 'No Show'];
+                            if (in_array($ex['Status'], $inactiveStatuses)) continue;
+                            
                             if (!$ex['StartTime'] || !$ex['EndTime']) continue; // skip old malformed data
                             $exStartTimeOnly = date('H:i:s', strtotime($ex['StartTime']));
                             $exEndTimeOnly = date('H:i:s', strtotime($ex['EndTime']));
@@ -866,6 +869,10 @@ class AdminController extends Controller {
         $employees = $employeeModel->getAll();
         $departmentModel = $this->model('Department');
         $departments = $departmentModel->getAll();
+        
+        $leaveModel = $this->model('LeaveRequest');
+        $allLeaves = $leaveModel->getAll();
+        $approvedLeaves = array_values(array_filter($allLeaves, function($l) { return $l['Status'] === 'Approved'; }));
 
         $this->view('layouts/main', [
             'title' => 'Overtime Assignments',
@@ -873,6 +880,7 @@ class AdminController extends Controller {
             'assignments' => $assignments,
             'employees' => $employees,
             'departments' => $departments,
+            'approvedLeaves' => $approvedLeaves,
             'error' => $_GET['error'] ?? null
         ]);
     }

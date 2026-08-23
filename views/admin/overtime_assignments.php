@@ -275,6 +275,7 @@ if (!empty($errorMsg)):
     const fixedHolidays = ['01-04', '02-12', '03-02', '03-27', '05-01', '07-19', '12-25'];
     const dynamicHolidays = ['2026-04-13', '2026-04-14', '2026-04-15', '2026-04-16', '2026-04-17'];
     const allAssignments = <?= json_encode($data['assignments'] ?? []) ?>;
+    const approvedLeaves = <?= json_encode($data['approvedLeaves'] ?? []) ?>;
 
     function isPublicHoliday(dateStr) {
         if (!dateStr) return false;
@@ -364,6 +365,32 @@ if (!empty($errorMsg)):
             dateHint.innerHTML = `<i class="fa-solid fa-calendar-check text-emerald-500"></i> <span class="text-emerald-600 dark:text-emerald-400 font-bold">Weekend / Holiday: Overtime strictly allowed from 9:00 AM (09:00) to 5:00 PM (17:00). Max 4h.</span>`;
         }
 
+        // Leave Validation
+        const deptId = document.getElementById('assign_dept_id').value;
+        let empsToCheck = [];
+        if (type === 'individual' && empId) {
+            empsToCheck.push(empId);
+        } else if (type === 'department' && deptId) {
+            const empOptions = document.querySelectorAll('#emp_id option');
+            empOptions.forEach(opt => {
+                if (opt.getAttribute('data-dept') === deptId) {
+                    empsToCheck.push(opt.value);
+                }
+            });
+        }
+
+        if (empsToCheck.length > 0 && dateVal) {
+            for (let emp of empsToCheck) {
+                const leave = approvedLeaves.find(l => l.EmpID == emp && dateVal >= l.StartDate && dateVal <= l.EndDate);
+                if (leave) {
+                    errorText.innerText = `Leave rule violation: ${type === 'department' ? 'An employee in this department' : 'This employee'} is on approved leave on ${dateVal}.`;
+                    errorEl.classList.remove('hidden');
+                    saveBtn.disabled = true;
+                    return;
+                }
+            }
+        }
+
         if (!startVal || !endVal) return;
 
         // 1. Time Window Rule Check
@@ -407,22 +434,9 @@ if (!empty($errorMsg)):
         let endUnix = new Date(`1970-01-01T${endVal}`).getTime();
         if (endUnix <= startUnix) endUnix += 86400000;
 
-        const deptId = document.getElementById('assign_dept_id').value;
-        let empsToCheck = [];
-        if (type === 'individual' && empId) {
-            empsToCheck.push(empId);
-        } else if (type === 'department' && deptId) {
-            const empOptions = document.querySelectorAll('#emp_id option');
-            empOptions.forEach(opt => {
-                if (opt.getAttribute('data-dept') === deptId) {
-                    empsToCheck.push(opt.value);
-                }
-            });
-        }
-
         if (empsToCheck.length > 0) {
             for (let ot of allAssignments) {
-                if (empsToCheck.includes(ot.EmpID.toString()) && ot.OvertimeDate === dateVal && ot.OvertimeID != currentId && !['Cancelled', 'Rejected'].includes(ot.Status)) {
+                if (empsToCheck.includes(ot.EmpID.toString()) && ot.OvertimeDate === dateVal && ot.OvertimeID != currentId && !['Cancelled', 'Rejected', 'NoOT', 'No OT', 'No Show'].includes(ot.Status)) {
                     if (!ot.StartTime || !ot.EndTime) continue;
                     const otStartTimeStr = ot.StartTime.includes(' ') ? ot.StartTime.split(' ')[1] : ot.StartTime;
                     const otEndTimeStr = ot.EndTime.includes(' ') ? ot.EndTime.split(' ')[1] : ot.EndTime;
