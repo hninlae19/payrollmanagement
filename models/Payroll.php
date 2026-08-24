@@ -91,13 +91,14 @@ class Payroll {
             $endDate = date("Y-m-t", strtotime($startDate));
             $empId = $p['EmpID'];
             
-            // Working days & salary rates
-            $workingDaysCount = HolidayHelper::getWorkingDaysCountInMonth($year, $month, $p['JoinDate'] ?? null);
+            // Calendar days & salary rates
+            $daysInTargetMonth = (int)date('t', strtotime($startDate));
             $basicSalary = (float)($p['BasicSalary'] ?? 0);
-            $dailySalary = $workingDaysCount > 0 ? ($basicSalary / $workingDaysCount) : 0;
+            $dailySalary = $daysInTargetMonth > 0 ? ($basicSalary / $daysInTargetMonth) : 0;
             $hourlyRate = $dailySalary / 8;
             
-            $p['working_days_count'] = $workingDaysCount;
+            $p['working_days_count'] = $p['PayableDays'] ?? $daysInTargetMonth; // Use actual PayableDays stored in DB if available
+            $p['prorated_basic_salary'] = round($dailySalary * $p['working_days_count'], 2);
             $p['daily_salary'] = round($dailySalary, 2);
             $p['hourly_rate'] = round($hourlyRate, 2);
             

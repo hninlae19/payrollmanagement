@@ -1134,10 +1134,10 @@ class AdminController extends Controller {
                         }
                     }
                     
-                    // Working Days, Daily Salary, Hourly Rate Calculation
-                    $workingDaysCount = HolidayHelper::getWorkingDaysCountInMonth($year, $month, $emp['JoinDate'] ?? null);
-                    $dailySalary = $workingDaysCount > 0 ? ($basicSalary / $workingDaysCount) : 0;
+                    // Calendar Month Daily Salary, Hourly Rate, and Prorated Basic Salary Calculation
+                    $dailySalary = $daysInTargetMonth > 0 ? ($basicSalary / $daysInTargetMonth) : 0;
                     $hourlyRate = $dailySalary / 8;
+                    $proratedBasicSalary = $dailySalary * $payableDays;
                     
                     // Attendance Records, Absences & Dynamic Late Minutes
                     $stmt = $conn->prepare("
@@ -1255,7 +1255,7 @@ class AdminController extends Controller {
                     
                     // Net Salary Calculation
                     $totalDeductions = $totalAttendanceDeduction + $leaveDeductionAmount;
-                    $grossSalary = $basicSalary + $otAmount + $bonusAmount;
+                    $grossSalary = $proratedBasicSalary + $otAmount + $bonusAmount;
                     $netSalary = max(0, $grossSalary - $totalDeductions);
                     
                     // Insert Payroll
@@ -1274,7 +1274,7 @@ class AdminController extends Controller {
                         ':emp' => $empId,
                         ':bs' => $basicSalary,
                         ':pm' => $payrollMonthStr,
-                        ':pd' => $workingDaysCount,
+                        ':pd' => $payableDays,
                         ':ba' => $bonusAmount,
                         ':oa' => $otAmount,
                         ':lda' => $totalDeductions,

@@ -182,7 +182,7 @@ else $currentMonthName = $monthNames[(int)$data['selectedMonth']];
                             <td class="px-4 py-3.5 font-mono text-rose-600 dark:text-rose-400 font-bold text-xs" title="Late: <?= number_format($p['late_deduction'] ?? 0) ?> | Half: <?= number_format($p['half_day_deduction'] ?? 0) ?> | Full: <?= number_format($p['full_day_deduction'] ?? 0) ?>">-<?= number_format($p['total_attendance_deduction'] ?? 0) ?></td>
                             <td class="px-4 py-3.5 font-mono text-rose-600 dark:text-rose-400 font-bold text-xs">-<?= number_format(max(0, ($p['LeaveDeductionAmount'] ?? 0) - ($p['total_attendance_deduction'] ?? 0))) ?></td>
                             
-                            <?php $grossSalary = $p['BasicSalary'] + $p['OvertimeAmount'] + $p['BonousAmount']; ?>
+                            <?php $grossSalary = ($p['prorated_basic_salary'] ?? $p['BasicSalary']) + $p['OvertimeAmount'] + $p['BonousAmount']; ?>
                             <td class="px-4 py-3.5 bg-indigo-50/50 dark:bg-indigo-950/20 font-mono font-bold text-indigo-700 dark:text-indigo-300 text-xs"><?= number_format($grossSalary) ?></td>
                             <td class="px-4 py-3.5 bg-emerald-50/60 dark:bg-emerald-950/30 font-mono font-black text-emerald-600 dark:text-emerald-400 text-xs"><?= number_format($p['NetSalary']) ?></td>
                             
