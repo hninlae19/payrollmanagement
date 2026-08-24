@@ -52,9 +52,13 @@
                     <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group">
                         <td class="px-6 py-3.5">
                             <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                                    <?= strtoupper(substr($bonus['FirstName'] ?? 'A',0,1) . substr($bonus['LastName'] ?? 'B',0,1)) ?>
-                                </div>
+                                <?php if (!empty($bonus['ProfilePicture'])): ?>
+                                    <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($bonus['ProfilePicture']) ?>" alt="Profile" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <?php else: ?>
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">
+                                        <?= strtoupper(substr($bonus['FirstName'] ?? 'A',0,1) . substr($bonus['LastName'] ?? 'B',0,1)) ?>
+                                    </div>
+                                <?php endif; ?>
                                 <div>
                                     <div class="font-bold text-slate-900 dark:text-white text-xs"><?= htmlspecialchars(($bonus['FirstName'] ?? '') . ' ' . ($bonus['LastName'] ?? '')) ?></div>
                                     <div class="text-[11px] text-indigo-600 dark:text-sky-400 font-mono font-semibold">EMP-<?= str_pad($bonus['EmpID'] ?? 0, 4, '0', STR_PAD_LEFT) ?></div>

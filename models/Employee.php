@@ -16,6 +16,7 @@ class Employee {
     public $PositionID;
     public $JoinDate;
     public $Status;
+    public $ProfilePicture;
     public $is_first_login;
 
     public function __construct() {
@@ -35,11 +36,24 @@ class Employee {
                 $this->EmpID = $row['EmpID'];
                 $this->FirstName = $row['FirstName'];
                 $this->LastName = $row['LastName'];
+                $this->ProfilePicture = $row['ProfilePicture'] ?? null;
                 $this->is_first_login = $row['is_first_login'] ?? 0;
                 return true;
             }
         }
         return false;
+    }
+
+    public function getNextEmployeeCode() {
+        $query = "SELECT AUTO_INCREMENT 
+                  FROM information_schema.tables 
+                  WHERE table_name = 'Employee' 
+                  AND table_schema = DATABASE()";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $nextId = $row['AUTO_INCREMENT'] ?? 1;
+        return 'EMP-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
     }
 
     public function emailExists($email, $excludeEmpID = null) {
@@ -103,7 +117,7 @@ class Employee {
         $query = "INSERT INTO " . $this->table . "
                   SET FirstName=:FirstName, LastName=:LastName, Gender=:Gender, 
                       Email=:Email, Password=:Password, PhoneNumber=:PhoneNumber, 
-                      Address=:Address, PositionID=:PositionID, JoinDate=:JoinDate, Status=:Status";
+                      Address=:Address, PositionID=:PositionID, JoinDate=:JoinDate, Status=:Status, ProfilePicture=:ProfilePicture";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':FirstName', $this->FirstName);
         $stmt->bindParam(':LastName', $this->LastName);
@@ -115,6 +129,7 @@ class Employee {
         $stmt->bindParam(':PositionID', $this->PositionID);
         $stmt->bindParam(':JoinDate', $this->JoinDate);
         $stmt->bindParam(':Status', $this->Status);
+        $stmt->bindParam(':ProfilePicture', $this->ProfilePicture);
         return $stmt->execute();
     }
 
@@ -122,7 +137,7 @@ class Employee {
         $query = "UPDATE " . $this->table . "
                   SET FirstName=:FirstName, LastName=:LastName, Gender=:Gender, 
                       Email=:Email, PhoneNumber=:PhoneNumber, 
-                      Address=:Address, PositionID=:PositionID, JoinDate=:JoinDate, Status=:Status" . 
+                      Address=:Address, PositionID=:PositionID, JoinDate=:JoinDate, Status=:Status, ProfilePicture=:ProfilePicture" . 
                   ($this->Password ? ", Password=:Password" : "") . 
                   " WHERE EmpID = :EmpID";
         $stmt = $this->conn->prepare($query);
@@ -138,6 +153,7 @@ class Employee {
         $stmt->bindParam(':PositionID', $this->PositionID);
         $stmt->bindParam(':JoinDate', $this->JoinDate);
         $stmt->bindParam(':Status', $this->Status);
+        $stmt->bindParam(':ProfilePicture', $this->ProfilePicture);
         $stmt->bindParam(':EmpID', $this->EmpID);
         return $stmt->execute();
     }

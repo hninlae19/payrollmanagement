@@ -23,9 +23,13 @@
             <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600"></div>
             
             <div class="w-24 h-24 rounded-3xl bg-white dark:bg-slate-800 mx-auto mb-4 border-4 border-white dark:border-slate-800 shadow-xl relative z-10 flex items-center justify-center overflow-hidden">
-                <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white text-2xl font-extrabold flex items-center justify-center font-outfit">
-                    <?= strtoupper(substr($data['employee']['FirstName'] ?? 'E', 0, 1) . substr($data['employee']['LastName'] ?? 'M', 0, 1)) ?>
-                </div>
+                <?php if (!empty($data['employee']['ProfilePicture'])): ?>
+                    <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($data['employee']['ProfilePicture']) ?>" alt="Profile" class="w-full h-full object-cover">
+                <?php else: ?>
+                    <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white text-2xl font-extrabold flex items-center justify-center font-outfit">
+                        <?= strtoupper(substr($data['employee']['FirstName'] ?? 'E', 0, 1) . substr($data['employee']['LastName'] ?? 'M', 0, 1)) ?>
+                    </div>
+                <?php endif; ?>
             </div>
             
             <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mb-1 font-outfit"><?= htmlspecialchars($data['employee']['FirstName'] . ' ' . $data['employee']['LastName']) ?></h2>
@@ -173,7 +177,7 @@
                 <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
-        <form action="/payrollsystem/admin/employee/<?= $data['employee']['EmpID'] ?>" method="POST" class="p-6">
+        <form action="/payrollsystem/admin/employee/<?= $data['employee']['EmpID'] ?>" method="POST" enctype="multipart/form-data" class="p-6">
             <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
             <input type="hidden" name="action" value="edit">
 
@@ -196,6 +200,20 @@
                         <option value="Male" <?= ($data['employee']['Gender'] ?? '') === 'Male' ? 'selected' : '' ?>>Male</option>
                         <option value="Female" <?= ($data['employee']['Gender'] ?? '') === 'Female' ? 'selected' : '' ?>>Female</option>
                     </select>
+                </div>
+                <div class="md:col-span-2 flex items-center gap-4">
+                    <?php if (!empty($data['employee']['ProfilePicture'])): ?>
+                        <div class="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+                            <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($data['employee']['ProfilePicture']) ?>" alt="Current Profile" class="w-full h-full object-cover">
+                        </div>
+                    <?php endif; ?>
+                    <div class="flex-grow">
+                        <label for="profile_picture" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Profile Picture (Optional)</label>
+                        <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+                        <?php if (!empty($data['employee']['ProfilePicture'])): ?>
+                            <p class="text-[10px] text-slate-500 mt-1">Upload a new image to replace the current one.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 

@@ -477,9 +477,13 @@
             <div class="relative" x-data="{ userOpen: false }">
                 <button @click="userOpen = !userOpen"
                         class="flex items-center gap-2.5 p-1.5 sm:px-3 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all group shadow-sm">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-sky-500 flex items-center justify-center font-extrabold text-white text-xs shadow-sm group-hover:scale-105 transition-transform">
-                        <?= htmlspecialchars(strtoupper(substr($_SESSION['Email'] ?? ($_SESSION['first_name'] ?? 'U'), 0, 1))) ?>
-                    </div>
+                    <?php if (!empty($_SESSION['profile_picture'])): ?>
+                        <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($_SESSION['profile_picture']) ?>" alt="Profile" class="w-8 h-8 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform">
+                    <?php else: ?>
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-sky-500 flex items-center justify-center font-extrabold text-white text-xs shadow-sm group-hover:scale-105 transition-transform">
+                            <?= htmlspecialchars(strtoupper(substr($_SESSION['Email'] ?? ($_SESSION['first_name'] ?? 'U'), 0, 1))) ?>
+                        </div>
+                    <?php endif; ?>
                     <div class="hidden sm:block text-left">
                         <div class="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">
                             <?= htmlspecialchars($_SESSION['first_name'] ?? ($_SESSION['role'] ?? 'User')) ?>

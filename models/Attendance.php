@@ -193,7 +193,7 @@ class Attendance {
     }
 
     public function getAllRecords() {
-        $query = "SELECT a.*, e.FirstName, e.LastName FROM " . $this->table . " a
+        $query = "SELECT a.*, e.FirstName, e.LastName, e.ProfilePicture FROM " . $this->table . " a
                   LEFT JOIN Employee e ON a.EmpID = e.EmpID
                   ORDER BY a.AttendanceDate DESC";
         $stmt = $this->conn->prepare($query);

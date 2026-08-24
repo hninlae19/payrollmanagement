@@ -162,7 +162,12 @@
                             <td class="px-6 py-3.5 font-semibold text-slate-700 dark:text-slate-300" x-text="(pagination.page - 1) * pagination.limit + index + 1"></td>
                             <td class="px-6 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm" x-text="record.first_name.charAt(0) + record.last_name.charAt(0)"></div>
+                                    <template x-if="record.profile_picture">
+                                        <img :src="'/payrollsystem/assets/uploads/profiles/' + record.profile_picture" alt="Profile" class="w-9 h-9 rounded-full object-cover shadow-sm">
+                                    </template>
+                                    <template x-if="!record.profile_picture">
+                                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm" x-text="record.first_name.charAt(0) + record.last_name.charAt(0)"></div>
+                                    </template>
                                     <div>
                                         <div class="font-bold text-slate-900 dark:text-white text-xs" x-text="record.first_name + ' ' + record.last_name"></div>
                                         <div class="text-[11px] text-indigo-600 dark:text-sky-400 font-mono font-semibold">EMP-<span x-text="record.employee_code"></span></div>

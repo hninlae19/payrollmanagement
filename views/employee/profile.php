@@ -51,9 +51,13 @@
                         <?php if (!empty($employee['ProfilePhoto'])): ?>
                             <img src="/payrollsystem/<?= htmlspecialchars($employee['ProfilePhoto']) ?>" alt="Profile" class="w-full h-full object-cover">
                         <?php else: ?>
-                            <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-sky-500 flex items-center justify-center text-3xl font-extrabold text-white font-outfit">
-                                <?= htmlspecialchars(strtoupper(substr($employee['FirstName'] ?? 'E', 0, 1))) ?>
-                            </div>
+                            <?php if (!empty($employee['ProfilePicture'])): ?>
+                                <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($employee['ProfilePicture']) ?>" alt="Profile" class="w-full h-full object-cover">
+                            <?php else: ?>
+                                <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white text-3xl font-extrabold flex items-center justify-center shadow-inner font-outfit">
+                                    <?= htmlspecialchars(strtoupper(substr($employee['FirstName'] ?? 'E', 0, 1))) ?>
+                                </div>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </div>

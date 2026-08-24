@@ -302,6 +302,23 @@ class AdminController extends Controller {
                         return;
                     }
 
+                    $profilePicture = null;
+                    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+                        $uploadDir = __DIR__ . '/../assets/uploads/profiles/';
+                        if (!is_dir($uploadDir)) {
+                            mkdir($uploadDir, 0777, true);
+                        }
+                        $fileExtension = strtolower(pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION));
+                        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                        if (in_array($fileExtension, $allowedExtensions)) {
+                            $fileName = uniqid() . '_' . time() . '.' . $fileExtension;
+                            $targetFilePath = $uploadDir . $fileName;
+                            if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $targetFilePath)) {
+                                $profilePicture = $fileName;
+                            }
+                        }
+                    }
+
                     $employeeModel->FirstName = $_POST['first_name'];
                     $employeeModel->LastName = $_POST['last_name'];
                     $employeeModel->Gender = $_POST['gender'] ?? 'Other';
@@ -312,6 +329,7 @@ class AdminController extends Controller {
                     $employeeModel->PositionID = $_POST['position_id'];
                     $employeeModel->JoinDate = $_POST['join_date'];
                     $employeeModel->Status = 'Active';
+                    $employeeModel->ProfilePicture = $profilePicture;
                     
                     $employeeModel->create();
                     $_SESSION['success'] = 'Employee added successfully.';
@@ -337,6 +355,8 @@ class AdminController extends Controller {
         
         $departments = $departmentModel->getAll();
         $positions = $positionModel->getAll();
+        
+        $nextEmployeeCode = $employeeModel->getNextEmployeeCode();
 
         $this->view('layouts/main', [
             'title' => 'Employees',
@@ -344,7 +364,8 @@ class AdminController extends Controller {
             'employees' => $employees,
             'departments' => $departments,
             'positions' => $positions,
-            'viewMode' => $viewMode
+            'viewMode' => $viewMode,
+            'nextEmployeeCode' => $nextEmployeeCode
         ]);
     }
 
@@ -369,6 +390,24 @@ class AdminController extends Controller {
                     return;
                 }
 
+                $profilePicture = $existingEmployee['ProfilePicture'] ?? null;
+                if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = __DIR__ . '/../assets/uploads/profiles/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    $fileExtension = strtolower(pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION));
+                    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                    if (in_array($fileExtension, $allowedExtensions)) {
+                        $fileName = uniqid() . '_' . time() . '.' . $fileExtension;
+                        $targetFilePath = $uploadDir . $fileName;
+                        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $targetFilePath)) {
+                            // optionally delete old picture here
+                            $profilePicture = $fileName;
+                        }
+                    }
+                }
+
                 $employeeModel->EmpID = $id;
                 $employeeModel->FirstName = $_POST['first_name'];
                 $employeeModel->LastName = $_POST['last_name'];
@@ -380,6 +419,7 @@ class AdminController extends Controller {
                 $employeeModel->Address = $_POST['address'];
                 $employeeModel->PositionID = $_POST['position_id'];
                 $employeeModel->Status = $_POST['status'];
+                $employeeModel->ProfilePicture = $profilePicture;
                 
                 if (!empty($_POST['password'])) {
                     if (strlen($_POST['password']) < 6) {
@@ -495,6 +535,7 @@ class AdminController extends Controller {
                 'employee_id' => $record['EmpID'],
                 'first_name' => $record['FirstName'],
                 'last_name' => $record['LastName'],
+                'profile_picture' => $record['ProfilePicture'] ?? null,
                 'employee_code' => str_pad($record['EmpID'], 4, '0', STR_PAD_LEFT),
                 'department_id' => $deptId,
                 'department_name' => $dept['DeptName'] ?? 'N/A',

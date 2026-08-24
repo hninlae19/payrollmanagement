@@ -32,7 +32,7 @@ class LeaveRequest {
     }
 
     public function getAll() {
-        $query = "SELECT lr.*, lt.LeaveType, lt.IsPaid, e.FirstName, e.LastName, p.DeptID, d.DeptName, DATEDIFF(lr.EndDate, lr.StartDate) + 1 as days
+        $query = "SELECT lr.*, lt.LeaveType, lt.IsPaid, e.FirstName, e.LastName, e.ProfilePicture, p.DeptID, d.DeptName, DATEDIFF(lr.EndDate, lr.StartDate) + 1 as days
                   FROM " . $this->table . " lr
                   LEFT JOIN LeaveTypes lt ON lr.LeaveTypeID = lt.LeaveTypeID
                   LEFT JOIN Employee e ON lr.EmpID = e.EmpID
@@ -57,7 +57,7 @@ class LeaveRequest {
     }
 
     public function getById($id) {
-        $query = "SELECT lr.*, lt.LeaveType, e.FirstName, e.LastName 
+        $query = "SELECT lr.*, lt.LeaveType, e.FirstName, e.LastName, e.ProfilePicture 
                   FROM " . $this->table . " lr
                   LEFT JOIN LeaveTypes lt ON lr.LeaveTypeID = lt.LeaveTypeID
                   LEFT JOIN Employee e ON lr.EmpID = e.EmpID

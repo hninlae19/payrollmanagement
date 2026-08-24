@@ -100,9 +100,13 @@
                         </td>
                         <td class="px-6 py-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">
-                                    <?= strtoupper(substr($emp['FirstName'],0,1) . substr($emp['LastName'],0,1)) ?>
-                                </div>
+                                <?php if (!empty($emp['ProfilePicture'])): ?>
+                                    <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($emp['ProfilePicture']) ?>" alt="Profile" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <?php else: ?>
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">
+                                        <?= strtoupper(substr($emp['FirstName'],0,1) . substr($emp['LastName'],0,1)) ?>
+                                    </div>
+                                <?php endif; ?>
                                 <div>
                                     <div class="font-bold text-slate-900 dark:text-white">
                                         <a href="/payrollsystem/admin/employee/<?= $emp['EmpID'] ?>" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
@@ -198,7 +202,7 @@
                 <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
-        <form action="/payrollsystem/admin/employees" method="POST" class="p-6 md:p-8">
+        <form action="/payrollsystem/admin/employees" method="POST" enctype="multipart/form-data" class="p-6 md:p-8">
             <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
             <input type="hidden" name="action" value="add">
             
@@ -210,8 +214,10 @@
                             <i class="fa-regular fa-user"></i> Personal Details
                         </h4>
                         <div class="grid grid-cols-2 gap-3.5 bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <div class="col-span-2 hidden">
-                                <input type="hidden" name="employee_code" id="employee_code" value="AUTO">
+                            <div class="col-span-2 mb-2">
+                                <label for="employee_code" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Employee Code</label>
+                                <input type="text" name="employee_code" id="employee_code" value="<?= htmlspecialchars($data['nextEmployeeCode'] ?? 'AUTO') ?>" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 dark:text-slate-400 font-mono text-xs shadow-inner cursor-not-allowed">
+                                <p class="text-[10px] text-slate-500 mt-1"><i class="fa-solid fa-circle-info text-indigo-500"></i> Auto-generated employee identifier.</p>
                             </div>
                             <div>
                                 <label for="first_name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">First Name</label>
@@ -228,6 +234,10 @@
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
+                            </div>
+                            <div class="col-span-2">
+                                <label for="profile_picture" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Profile Picture (Optional)</label>
+                                <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 dark:text-white text-xs shadow-sm">
                             </div>
                         </div>
                     </div>

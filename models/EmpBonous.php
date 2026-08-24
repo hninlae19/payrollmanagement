@@ -17,7 +17,7 @@ class EmpBonous {
     }
 
     public function getAll() {
-        $query = "SELECT eb.*, b.BonusType, e.FirstName, e.LastName, e.EmpID, d.DeptName 
+        $query = "SELECT eb.*, b.BonusType, e.FirstName, e.LastName, e.ProfilePicture, e.EmpID, d.DeptName 
                   FROM " . $this->table . " eb
                   LEFT JOIN Bonous b ON eb.BonousID = b.BonousID
                   LEFT JOIN Employee e ON eb.EmpID = e.EmpID

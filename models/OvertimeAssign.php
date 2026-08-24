@@ -54,7 +54,7 @@ class OvertimeAssign {
 
     public function getAll() {
         $this->autoUpdateStatuses();
-        $query = "SELECT oa.*, e.FirstName, e.LastName
+        $query = "SELECT oa.*, e.FirstName, e.LastName, e.ProfilePicture
                   FROM " . $this->table . " oa
                   LEFT JOIN Employee e ON oa.EmpID = e.EmpID
                   ORDER BY oa.OvertimeID DESC";

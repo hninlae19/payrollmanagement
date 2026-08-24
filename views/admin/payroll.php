@@ -98,6 +98,7 @@ else $currentMonthName = $monthNames[(int)$data['selectedMonth']];
             <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300 whitespace-nowrap">
                 <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider">
                     <tr>
+                        <th class="px-4 py-4 w-12 text-center">No.</th>
                         <?php if ($data['selectedMonth'] === 'all'): ?>
                             <th class="px-4 py-4 font-bold text-indigo-600 dark:text-sky-400">Payroll Month</th>
                         <?php endif; ?>
@@ -134,8 +135,12 @@ else $currentMonthName = $monthNames[(int)$data['selectedMonth']];
                         </td>
                     </tr>
                     <?php else: ?>
+                        <?php $counter = 1; ?>
                         <?php foreach($data['payrolls'] as $p): ?>
                         <tr x-show="searchQuery === '' || '<?= strtolower(addslashes($p['FirstName'] . ' ' . $p['LastName'])) ?>'.includes(searchQuery.toLowerCase())" class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group">
+                            <td class="px-4 py-3.5 text-center font-semibold text-slate-700 dark:text-slate-300">
+                                <?= $counter++ ?>
+                            </td>
                             <?php if ($data['selectedMonth'] === 'all'): ?>
                                 <td class="px-4 py-3.5 font-bold text-slate-900 dark:text-white text-xs">
                                     <i class="fa-regular fa-calendar-alt text-indigo-500 mr-1.5"></i><?= htmlspecialchars($p['PayrollMonth']) ?>
@@ -143,9 +148,13 @@ else $currentMonthName = $monthNames[(int)$data['selectedMonth']];
                             <?php endif; ?>
                             <td class="px-4 py-3.5">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                                    <?php if (!empty($p['ProfilePicture'])): ?>
+                                    <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($p['ProfilePicture']) ?>" alt="Profile" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <?php else: ?>
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">
                                         <?= strtoupper(substr($p['FirstName'] ?? 'A',0,1) . substr($p['LastName'] ?? 'B',0,1)) ?>
                                     </div>
+                                <?php endif; ?>
                                     <div>
                                         <div class="font-bold text-slate-900 dark:text-white text-xs"><?= htmlspecialchars(($p['FirstName'] ?? '') . ' ' . ($p['LastName'] ?? '')) ?></div>
                                     </div>

@@ -24,7 +24,7 @@ class Payroll {
     }
 
     public function getAll() {
-        $query = "SELECT p.*, e.FirstName, e.LastName, e.JoinDate, pos.PositionName, d.DeptName 
+        $query = "SELECT p.*, e.FirstName, e.LastName, e.ProfilePicture, e.JoinDate, pos.PositionName, d.DeptName 
                   FROM " . $this->table . " p
                   LEFT JOIN Employee e ON p.EmpID = e.EmpID
                   LEFT JOIN Position pos ON e.PositionID = pos.PositionID
@@ -37,7 +37,7 @@ class Payroll {
     }
 
     public function getByEmployee($emp_id) {
-        $query = "SELECT p.*, e.FirstName, e.LastName, e.JoinDate, pos.PositionName, d.DeptName 
+        $query = "SELECT p.*, e.FirstName, e.LastName, e.ProfilePicture, e.JoinDate, pos.PositionName, d.DeptName 
                   FROM " . $this->table . " p
                   LEFT JOIN Employee e ON p.EmpID = e.EmpID
                   LEFT JOIN Position pos ON e.PositionID = pos.PositionID
@@ -52,7 +52,7 @@ class Payroll {
     }
 
     public function getById($id) {
-        $query = "SELECT p.*, e.FirstName, e.LastName, e.JoinDate, pos.PositionName, d.DeptName 
+        $query = "SELECT p.*, e.FirstName, e.LastName, e.ProfilePicture, e.JoinDate, pos.PositionName, d.DeptName 
                   FROM " . $this->table . " p
                   LEFT JOIN Employee e ON p.EmpID = e.EmpID
                   LEFT JOIN Position pos ON e.PositionID = pos.PositionID

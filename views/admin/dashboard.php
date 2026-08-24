@@ -188,9 +188,13 @@
                             <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group">
                                 <td class="px-6 py-3.5">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                                            <?= strtoupper(substr($att['FirstName'],0,1) . substr($att['LastName'],0,1)) ?>
-                                        </div>
+                                        <?php if (!empty($att['ProfilePicture'])): ?>
+                                            <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($att['ProfilePicture']) ?>" alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-sm">
+                                        <?php else: ?>
+                                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                                                <?= strtoupper(substr($att['FirstName'],0,1) . substr($att['LastName'],0,1)) ?>
+                                            </div>
+                                        <?php endif; ?>
                                         <div>
                                             <div class="font-bold text-slate-900 dark:text-white text-xs"><?= htmlspecialchars($att['FirstName'] . ' ' . $att['LastName']) ?></div>
                                             <div class="text-[11px] text-slate-400 font-mono">EMP-<?= str_pad($att['EmpID'], 4, '0', STR_PAD_LEFT) ?></div>
