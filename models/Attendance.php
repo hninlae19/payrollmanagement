@@ -91,12 +91,18 @@ class Attendance {
             // Column already exists, ignore
         }
 
+        $currentDate = date('Y-m-d');
+        $currentTime = date('H:i:s');
+
         // Find records that need auto check-out
         $query = "SELECT * FROM " . $this->table . " 
                   WHERE CheckOutTime IS NULL 
-                  AND (AttendanceDate < CURRENT_DATE() 
-                       OR (AttendanceDate = CURRENT_DATE() AND CURRENT_TIME() >= '17:15:00'))";
+                  AND (AttendanceDate < :current_date 
+                       OR (AttendanceDate = :current_date2 AND :current_time >= '17:15:00'))";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':current_date', $currentDate);
+        $stmt->bindParam(':current_date2', $currentDate);
+        $stmt->bindParam(':current_time', $currentTime);
         $stmt->execute();
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
