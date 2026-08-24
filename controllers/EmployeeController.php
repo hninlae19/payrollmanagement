@@ -124,8 +124,13 @@ class EmployeeController extends Controller {
                 } elseif ($time < '08:30:00' || $time > '17:00:00') {
                     $_SESSION['att_error'] = 'Check-in is only allowed between 8:30 AM and 5:00 PM.';
                 } else {
-                    $attendanceModel->checkIn($emp_id, $time, $today);
-                    $_SESSION['att_success'] = 'Checked in successfully.';
+                    $todayRecord = $attendanceModel->getTodayRecord($emp_id, $today);
+                    if ($todayRecord) {
+                        $_SESSION['att_error'] = 'You have already checked in today.';
+                    } else {
+                        $attendanceModel->checkIn($emp_id, $time, $today);
+                        $_SESSION['att_success'] = 'Checked in successfully.';
+                    }
                 }
             } elseif ($_POST['action'] === 'check_out') {
                 if (!HolidayHelper::isWorkingDay($today)) {

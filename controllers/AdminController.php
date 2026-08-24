@@ -318,12 +318,23 @@ class AdminController extends Controller {
                 } elseif ($_POST['action'] === 'delete') {
                     $employeeModel->updateStatus($_POST['id'], 'Inactive');
                     $_SESSION['success'] = 'Employee deactivated successfully.';
+                } elseif ($_POST['action'] === 'restore') {
+                    $employeeModel->updateStatus($_POST['id'], 'Active');
+                    $_SESSION['success'] = 'Employee restored successfully.';
                 }
             }
-            $this->redirect('/payrollsystem/admin/employees');
+            $viewMode = $_GET['view'] ?? 'active';
+            $this->redirect('/payrollsystem/admin/employees?view=' . $viewMode);
         }
 
-        $employees = $employeeModel->getAll();
+        $viewMode = $_GET['view'] ?? 'active';
+        $statusFilter = $viewMode === 'inactive' ? 'Inactive' : 'Active';
+
+        $allEmployees = $employeeModel->getAll();
+        $employees = array_filter($allEmployees, function($e) use ($statusFilter) {
+            return $e['Status'] === $statusFilter;
+        });
+        
         $departments = $departmentModel->getAll();
         $positions = $positionModel->getAll();
 
@@ -332,7 +343,8 @@ class AdminController extends Controller {
             'content' => 'admin/employees',
             'employees' => $employees,
             'departments' => $departments,
-            'positions' => $positions
+            'positions' => $positions,
+            'viewMode' => $viewMode
         ]);
     }
 

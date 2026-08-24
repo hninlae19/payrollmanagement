@@ -133,6 +133,7 @@
             <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
                 <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider sticky top-0 z-0">
                     <tr>
+                        <th scope="col" class="px-6 py-4 w-16">No.</th>
                         <th scope="col" class="px-6 py-4">Employee</th>
                         <th scope="col" class="px-6 py-4">Department</th>
                         <th scope="col" class="px-6 py-4">Date</th>
@@ -146,7 +147,7 @@
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60">
                     <template x-if="records.length === 0 && !loading">
                         <tr>
-                            <td colspan="8" class="px-6 py-12 text-center">
+                            <td colspan="9" class="px-6 py-12 text-center">
                                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-700 text-indigo-500 mb-3">
                                     <i class="fa-solid fa-folder-open text-2xl"></i>
                                 </div>
@@ -156,8 +157,9 @@
                         </tr>
                     </template>
                     
-                    <template x-for="record in records" :key="record.id">
+                    <template x-for="(record, index) in records" :key="record.id">
                         <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group">
+                            <td class="px-6 py-3.5 font-semibold text-slate-700 dark:text-slate-300" x-text="(pagination.page - 1) * pagination.limit + index + 1"></td>
                             <td class="px-6 py-3.5">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-bold text-xs shadow-sm" x-text="record.first_name.charAt(0) + record.last_name.charAt(0)"></div>

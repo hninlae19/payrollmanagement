@@ -44,6 +44,10 @@
         </select>
     </div>
     <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+        <div class="flex items-center bg-slate-100 dark:bg-slate-700/50 p-1 rounded-lg mr-2">
+            <a href="?view=active" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all <?= ($data['viewMode'] === 'active') ? 'bg-white dark:bg-slate-600 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200' ?>">Active</a>
+            <a href="?view=inactive" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all <?= ($data['viewMode'] === 'inactive') ? 'bg-white dark:bg-slate-600 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200' ?>">Inactive</a>
+        </div>
         <button onclick="window.print()" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-xs flex items-center gap-1.5 shadow-sm" title="Print Directory">
             <i class="fa-solid fa-print"></i>
             <span class="hidden sm:inline font-semibold">Print</span>
@@ -57,6 +61,7 @@
         <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300" id="employeeTable">
             <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider">
                 <tr>
+                    <th scope="col" class="px-6 py-4 w-16">No.</th>
                     <th scope="col" class="px-6 py-4">Employee</th>
                     <th scope="col" class="px-6 py-4">Contact</th>
                     <th scope="col" class="px-6 py-4">Department</th>
@@ -68,7 +73,7 @@
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60">
                 <?php if(empty($data['employees'])): ?>
                     <tr class="bg-white dark:bg-slate-800" id="noResultsRow">
-                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                        <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                             <div class="w-16 h-16 mx-auto bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-3 text-indigo-500">
                                 <i class="fa-solid fa-users-slash text-2xl"></i>
                             </div>
@@ -77,19 +82,22 @@
                     </tr>
                 <?php else: ?>
                     <tr id="noResultsRow" style="display: none;" class="bg-white dark:bg-slate-800">
-                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                        <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                             <div class="w-16 h-16 mx-auto bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-3 text-indigo-500">
                                 <i class="fa-solid fa-users-slash text-2xl"></i>
                             </div>
                             <p class="font-medium text-slate-900 dark:text-white">No employees match your filter.</p>
                         </td>
                     </tr>
-                    <?php foreach($data['employees'] as $emp): ?>
+                    <?php $no = 1; foreach($data['employees'] as $emp): ?>
                     <tr class="emp-row hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group"
                         data-name="<?= strtolower(htmlspecialchars($emp['FirstName'] . ' ' . $emp['LastName'])) ?>" 
                         data-email="<?= strtolower(htmlspecialchars($emp['Email'])) ?>"
                         data-department="<?= htmlspecialchars($emp['DeptName'] ?? 'Unassigned') ?>">
                         
+                        <td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-300">
+                            <?= $no++ ?>
+                        </td>
                         <td class="px-6 py-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-sky-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">
@@ -149,14 +157,25 @@
                                 <a href="/payrollsystem/admin/employee/<?= $emp['EmpID'] ?>#edit" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-400 dark:hover:bg-indigo-900/60 flex items-center justify-center border border-indigo-200 dark:border-indigo-800 transition-colors shadow-sm" title="Edit Profile">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </a>
-                                <form action="/payrollsystem/admin/employees" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Are you sure you want to remove this employee?');">
+                                <?php if($data['viewMode'] === 'active'): ?>
+                                <form action="/payrollsystem/admin/employees?view=active" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Are you sure you want to deactivate this employee?');">
                                     <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<?= $emp['EmpID'] ?>">
-                                    <button type="submit" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60 flex items-center justify-center border border-rose-200 dark:border-rose-800 transition-colors shadow-sm" title="Delete">
+                                    <button type="submit" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60 flex items-center justify-center border border-rose-200 dark:border-rose-800 transition-colors shadow-sm" title="Deactivate">
                                         <i class="fa-solid fa-trash text-xs"></i>
                                     </button>
                                 </form>
+                                <?php else: ?>
+                                <form action="/payrollsystem/admin/employees?view=inactive" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Are you sure you want to restore this employee?');">
+                                    <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
+                                    <input type="hidden" name="action" value="restore">
+                                    <input type="hidden" name="id" value="<?= $emp['EmpID'] ?>">
+                                    <button type="submit" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400 dark:hover:bg-emerald-900/60 flex items-center justify-center border border-emerald-200 dark:border-emerald-800 transition-colors shadow-sm" title="Restore">
+                                        <i class="fa-solid fa-rotate-left text-xs"></i>
+                                    </button>
+                                </form>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
