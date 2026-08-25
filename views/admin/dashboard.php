@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 datasets: [{
                     label: 'Present',
-                    data: [45, 48, 46, 49, 47, 20, 5],
+                    data: <?= json_encode($weeklyData ?? [0, 0, 0, 0, 0, 0, 0]) ?>,
                     borderColor: '#6366f1',
                     backgroundColor: gradient,
                     borderWidth: 2.5,
@@ -343,6 +343,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
             }
         });
+        
+        // Save chart instance to update it later
+        window.attendanceChartInstance = Chart.getChart(canvasEl);
     }
 
     // AJAX Polling every 30 seconds
@@ -365,6 +368,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateStat('stat-pend-resets', data.pendingResets);
                 updateStat('stat-payroll', parseFloat(data.monthlyPayroll).toLocaleString('en-US', {minimumFractionDigits: 2}) + ' MMK');
                 updateStat('stat-bonus', parseFloat(data.monthlyBonus).toLocaleString('en-US', {minimumFractionDigits: 2}) + ' MMK');
+
+                // Update Chart
+                if (window.attendanceChartInstance && data.weeklyData) {
+                    window.attendanceChartInstance.data.datasets[0].data = data.weeklyData;
+                    window.attendanceChartInstance.update();
+                }
 
                 // Build Table HTML
                 const tbody = document.getElementById('recent-att-table');

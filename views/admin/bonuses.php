@@ -25,10 +25,28 @@
 </div>
 
 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="100">
+    <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col sm:flex-row gap-4 justify-between items-center">
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div class="relative w-full sm:w-64">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-search text-slate-400"></i>
+                </div>
+                <input type="text" id="filterName" onkeyup="filterBonuses()" placeholder="Search by name or ID..." class="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-900 dark:text-white">
+            </div>
+            <select id="filterDept" onchange="filterBonuses()" class="w-full sm:w-48 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-900 dark:text-white cursor-pointer">
+                <option value="">All Departments</option>
+                <?php foreach($data['departments'] as $dept): ?>
+                    <option value="<?= htmlspecialchars($dept['DeptName']) ?>"><?= htmlspecialchars($dept['DeptName']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+    
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
             <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider">
                 <tr>
+                    <th scope="col" class="px-6 py-4 w-16">No.</th>
                     <th scope="col" class="px-6 py-4">Employee</th>
                     <th scope="col" class="px-6 py-4">Department</th>
                     <th scope="col" class="px-6 py-4">Amount</th>
@@ -40,7 +58,7 @@
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60">
                 <?php if(empty($data['bonuses'])): ?>
                     <tr class="bg-white dark:bg-slate-800">
-                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                        <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                             <div class="w-14 h-14 mx-auto bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-3 text-indigo-500">
                                 <i class="fa-solid fa-gift text-2xl"></i>
                             </div>
@@ -48,8 +66,9 @@
                         </td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach($data['bonuses'] as $bonus): ?>
-                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group">
+                    <?php $count = 1; foreach($data['bonuses'] as $bonus): ?>
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group bonus-row" data-name="<?= strtolower(htmlspecialchars(($bonus['FirstName'] ?? '') . ' ' . ($bonus['LastName'] ?? '') . ' emp-' . str_pad($bonus['EmpID'] ?? 0, 4, '0', STR_PAD_LEFT))) ?>" data-dept="<?= htmlspecialchars($bonus['DeptName'] ?? 'N/A') ?>">
+                        <td class="px-6 py-3.5 font-bold text-slate-500 dark:text-slate-400 text-xs text-center"><?= $count++ ?></td>
                         <td class="px-6 py-3.5">
                             <div class="flex items-center gap-3">
                                 <?php if (!empty($bonus['ProfilePicture'])): ?>
@@ -186,3 +205,26 @@
         </form>
     </div>
 </div>
+
+<script>
+    function filterBonuses() {
+        let nameFilter = document.getElementById('filterName').value.toLowerCase();
+        let deptFilter = document.getElementById('filterDept').value;
+        
+        let rows = document.querySelectorAll('.bonus-row');
+        
+        rows.forEach(row => {
+            let nameAttr = row.getAttribute('data-name') || '';
+            let deptAttr = row.getAttribute('data-dept') || '';
+            
+            let nameMatch = nameFilter === '' || nameAttr.includes(nameFilter);
+            let deptMatch = deptFilter === '' || deptAttr === deptFilter;
+            
+            if (nameMatch && deptMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>

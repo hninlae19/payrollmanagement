@@ -155,8 +155,8 @@ class Payroll {
             $p['full_day_deduction'] = $fullDayDeduction;
             $p['total_attendance_deduction'] = $totalAttendanceDeduction;
             
-            // OT stats
-            $stmt = $this->conn->prepare("SELECT SUM(TotalHours) as ot_hours FROM overtimeassign WHERE EmpID = :emp AND OvertimeDate BETWEEN :sd AND :ed AND Status = 'Completed'");
+            // Fetch approved Overtime within the period
+            $stmt = $this->conn->prepare("SELECT SUM(TotalHours) as ot_hours FROM overtimeassign WHERE EmpID = :emp AND OvertimeDate BETWEEN :sd AND :ed AND Status IN ('Completed', 'OT Full')");
             $stmt->execute([':emp' => $empId, ':sd' => $startDate, ':ed' => $endDate]);
             $p['ot_hours'] = $stmt->fetchColumn() ?: 0;
             

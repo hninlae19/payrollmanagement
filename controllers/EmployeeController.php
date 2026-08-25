@@ -83,13 +83,13 @@ class EmployeeController extends Controller {
         $today = date('Y-m-d');
 
         foreach ($overtimes as $ot) {
-            if ($ot['OvertimeDate'] >= $today && in_array($ot['Status'], ['Accepted', 'Completed', 'InProgress'])) {
+            if ($ot['OvertimeDate'] >= $today && in_array($ot['Status'], ['Accepted', 'Completed', 'OT Full', 'InProgress'])) {
                 $upcoming++;
             }
             if ($ot['Status'] === 'Pending') {
                 $pending++;
             }
-            if ($ot['Status'] === 'Completed') {
+            if ($ot['Status'] === 'Completed' || $ot['Status'] === 'OT Full') {
                 $totalHours += (float)$ot['TotalHours'];
                 $totalEarnings += (float)$ot['OTAmount'];
             }

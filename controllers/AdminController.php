@@ -45,6 +45,15 @@ class AdminController extends Controller {
         $bonusStmt->execute([date('n'), date('Y')]);
         $monthlyBonus = (float)($bonusStmt->fetchColumn() ?: 0);
         $recentAttendance = array_slice($attendance, 0, 5);
+
+        // Weekly Attendance Data
+        $weeklyData = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = date('Y-m-d', strtotime('monday this week +' . $i . ' days'));
+            $count = count(array_filter($attendance, fn($a) => $a['AttendanceDate'] === $date && ($a['Status'] === 'Present' || $a['Status'] === 'Late')));
+            $weeklyData[] = $count;
+        }
+
         header('Content-Type: application/json');
         echo json_encode([
             'totalEmployees' => $totalEmployees,
@@ -58,7 +67,8 @@ class AdminController extends Controller {
             'pendingLeaves' => $pendingLeaves,
             'pendingOvertime' => $pendingOvertime,
             'pendingResets' => $pendingResetsCount,
-            'recentAttendance' => $recentAttendance
+            'recentAttendance' => $recentAttendance,
+            'weeklyData' => $weeklyData
         ]);
     }
 
@@ -107,6 +117,16 @@ class AdminController extends Controller {
 
         $pendingResetsCount = $conn->query("SELECT COUNT(*) FROM employee WHERE PasswordResetRequest = 1")->fetchColumn();
 
+        // Weekly Attendance Data
+        $weeklyData = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = date('Y-m-d', strtotime('monday this week +' . $i . ' days'));
+            $count = count(array_filter($attendance, function($a) use ($date) {
+                return $a['AttendanceDate'] == $date && ($a['Status'] == 'Present' || $a['Status'] == 'Late');
+            }));
+            $weeklyData[] = $count;
+        }
+
         $this->view('layouts/main', [
             'title' => 'Dashboard',
             'content' => 'admin/dashboard',
@@ -121,7 +141,8 @@ class AdminController extends Controller {
             'recentAttendance' => $recentAttendance,
             'pendingLeaves' => $pendingLeaves,
             'pendingOvertime' => $pendingOvertime,
-            'pendingResets' => $pendingResetsCount
+            'pendingResets' => $pendingResetsCount,
+            'weeklyData' => $weeklyData
         ]);
     }
 
@@ -804,20 +825,20 @@ class AdminController extends Controller {
                         $minStart = strtotime("1970-01-01 17:00:00");
                         $maxEnd = strtotime("1970-01-01 21:00:00");
                         if ($startUnix < $minStart || $endUnix > $maxEnd) {
-                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Overtime is only allowed between 5:00 PM and 9:00 PM on working days.'));
+                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Overtime is only allowed between 5:00 PM and 9:00 PM on working days.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                             return;
                         }
                     } else {
                         $minStart = strtotime("1970-01-01 09:00:00");
                         $maxEnd = strtotime("1970-01-01 17:00:00");
                         if ($startUnix < $minStart || $endUnix > $maxEnd) {
-                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Overtime is only allowed between 9:00 AM and 5:00 PM on holidays/weekends.'));
+                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Overtime is only allowed between 9:00 AM and 5:00 PM on holidays/weekends.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                             return;
                         }
                     }
                     
                     if ($hours > 4) {
-                        $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Daily overtime limit of 4 hours exceeded.'));
+                        $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Daily overtime limit of 4 hours exceeded.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                         return;
                     }
                     
@@ -825,12 +846,20 @@ class AdminController extends Controller {
                     
                     // Validate each employee
                     foreach ($employeesToProcess as $empId) {
+                        $empName = "EMP-" . str_pad($empId, 4, '0', STR_PAD_LEFT);
+                        foreach ($employees as $e) {
+                            if ($e['EmpID'] == $empId) {
+                                $empName = $e['FirstName'] . ' ' . $e['LastName'] . ' (' . $empName . ')';
+                                break;
+                            }
+                        }
+
                         // Attendance Check (Working Days)
                         if ($isWorkingDay) {
                             $stmt = $conn->prepare("SELECT * FROM attendance WHERE EmpID = :emp AND AttendanceDate = :date AND CheckInTime IS NOT NULL");
                             $stmt->execute([':emp' => $empId, ':date' => $otDate]);
                             if ($stmt->rowCount() == 0) {
-                                $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Employee has not checked in today.'));
+                                $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode("Overtime assignment failed: $empName has not checked in.") . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                                 return;
                             }
                         }
@@ -839,7 +868,7 @@ class AdminController extends Controller {
                         $leaves = $leaveModel->getByEmployee($empId);
                         foreach ($leaves as $leave) {
                             if ($leave['Status'] === 'Approved' && $otDate >= $leave['StartDate'] && $otDate <= $leave['EndDate']) {
-                                $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Employee is on approved leave.'));
+                                $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode("Overtime assignment failed: $empName is on approved leave.") . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                                 return;
                             }
                         }
@@ -859,7 +888,7 @@ class AdminController extends Controller {
                             if ($exEnd < $exStart) $exEnd += 86400;
                             
                             if ($startUnix < $exEnd && $endUnix > $exStart) {
-                                $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Overtime time range overlaps with an existing assignment.'));
+                                $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode("Overtime assignment failed: Overtime overlaps with an existing assignment for $empName.") . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                                 return;
                             }
                         }
@@ -869,7 +898,7 @@ class AdminController extends Controller {
                         $otMonth = date('m', strtotime($otDate));
                         $currentMonthlyHours = $overtimeModel->getMonthlyHours($empId, $otYear, $otMonth, $excludeId);
                         if (($currentMonthlyHours + $hours) > 60) {
-                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Monthly overtime limit of 60 hours exceeded.'));
+                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode("Overtime assignment failed: Monthly overtime limit of 60 hours exceeded for $empName.") . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                             return;
                         }
                     }
@@ -904,8 +933,8 @@ class AdminController extends Controller {
                         }
                     }
                 } elseif ($_POST['action'] === 'approve' || $_POST['action'] === 'cancel' || $_POST['action'] === 'no_show') {
-                    $status = 'Completed';
-                    if ($_POST['action'] === 'approve') $status = 'Completed';
+                    $status = 'OT Full';
+                    if ($_POST['action'] === 'approve') $status = 'OT Full';
                     elseif ($_POST['action'] === 'cancel') $status = 'Cancelled';
                     elseif ($_POST['action'] === 'no_show') $status = 'NoOT';
 
@@ -993,7 +1022,21 @@ class AdminController extends Controller {
                         $empBonousModel->BonusDate = $date;
                         $empBonousModel->BonousID = $bonusId;
                         
-                        $empBonousModel->create();
+                        if ($empBonousModel->create()) {
+                            // Automatically update Pending payrolls for better UX
+                            $payrollMonthStr = date('F Y', strtotime($date));
+                            $updateStmt = $conn->prepare("
+                                UPDATE payroll 
+                                SET BonousAmount = BonousAmount + :amt,
+                                    NetSalary = NetSalary + :amt
+                                WHERE EmpID = :emp AND PayrollMonth = :pm AND Status = 'Pending'
+                            ");
+                            $updateStmt->execute([
+                                ':amt' => $amount,
+                                ':emp' => $eId,
+                                ':pm' => $payrollMonthStr
+                            ]);
+                        }
                     }
                     
                 } elseif ($_POST['action'] === 'delete') {
@@ -1178,7 +1221,7 @@ class AdminController extends Controller {
                     $totalAttendanceDeduction = $lateDeduction + $halfDayDeduction + $fullDayDeduction;
                     
                     // Overtime stats
-                    $stmt = $conn->prepare("SELECT SUM(TotalHours) as ot_hours, SUM(OTAmount) as ot_amount FROM overtimeassign WHERE EmpID = :emp AND OvertimeDate BETWEEN :sd AND :ed AND Status = 'Completed'");
+                    $stmt = $conn->prepare("SELECT SUM(TotalHours) as ot_hours, SUM(OTAmount) as ot_amount FROM overtimeassign WHERE EmpID = :emp AND OvertimeDate BETWEEN :sd AND :ed AND Status IN ('Completed', 'OT Full')");
                     $stmt->execute([':emp' => $empId, ':sd' => $startDate, ':ed' => $endDate]);
                     $otStats = $stmt->fetch(PDO::FETCH_ASSOC);
                     $otAmount = (float)($otStats['ot_amount'] ?: 0);

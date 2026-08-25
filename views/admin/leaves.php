@@ -59,6 +59,7 @@
         <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
             <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider">
                 <tr>
+                    <th scope="col" class="px-6 py-4 w-16">No.</th>
                     <th scope="col" class="px-6 py-4">Employee</th>
                     <th scope="col" class="px-6 py-4">Leave Type</th>
                     <th scope="col" class="px-6 py-4">Duration</th>
@@ -70,7 +71,7 @@
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60">
                 <?php if(empty($data['leaveRequests'])): ?>
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                        <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                             <div class="w-14 h-14 mx-auto bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-3 text-indigo-500">
                                 <i class="fa-solid fa-calendar-check text-2xl"></i>
                             </div>
@@ -79,8 +80,9 @@
                         </td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach($data['leaveRequests'] as $lr): ?>
+                    <?php $count = 1; foreach($data['leaveRequests'] as $lr): ?>
                     <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group">
+                        <td class="px-6 py-3.5 font-bold text-slate-500 dark:text-slate-400 text-xs text-center"><?= $count++ ?></td>
                         <td class="px-6 py-3.5">
                             <div class="flex items-center gap-3">
                                 <?php if (!empty($lr['ProfilePicture'])): ?>

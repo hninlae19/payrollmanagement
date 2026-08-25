@@ -5,10 +5,10 @@ $conn = $db->getConnection();
 
 try {
     // Modify ENUM column
-    $conn->exec("ALTER TABLE overtimeassign MODIFY COLUMN Status enum('Pending','Accepted','Rejected','InProgress','Completed','NoOT') NOT NULL DEFAULT 'Pending'");
+    $conn->exec("ALTER TABLE overtimeassign MODIFY COLUMN Status enum('Pending','Accepted','Rejected','InProgress','Completed','NoOT','Cancelled','No Show','OT Full') NOT NULL DEFAULT 'Pending'");
     
     // Migrate any 'Approved' to 'Completed' (assuming that's the intention if they are past EndTime, or just map them directly so it doesn't crash)
-    $conn->exec("UPDATE overtimeassign SET Status = 'Completed' WHERE Status NOT IN ('Pending','Accepted','Rejected','InProgress','Completed','NoOT')");
+    $conn->exec("UPDATE overtimeassign SET Status = 'Completed' WHERE Status NOT IN ('Pending','Accepted','Rejected','InProgress','Completed','NoOT','Cancelled','No Show','OT Full')");
     
     echo "Database schema updated successfully.\n";
 } catch (PDOException $e) {

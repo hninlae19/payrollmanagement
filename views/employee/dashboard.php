@@ -164,7 +164,7 @@ $hasPhoto = !empty($profilePhoto);
                     <form action="/payrollsystem/employee/attendance" method="POST" class="relative z-10">
                         <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
                         <input type="hidden" name="action" value="check_out">
-                        <button type="submit" class="w-full bg-gradient-to-r from-rose-600 via-red-600 to-rose-600 hover:from-rose-500 hover:to-red-500 text-white font-extrabold text-sm py-4 px-6 rounded-2xl shadow-xl shadow-rose-600/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
+                        <button type="submit" class="w-full bg-gradient-to-r from-purple-600 via-purple-600 to-purple-600 hover:from-purple-500 hover:to-purple-500 text-white font-extrabold text-sm py-4 px-6 rounded-2xl shadow-xl shadow-rose-600/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
                             <i class="fa-solid fa-right-from-bracket text-lg"></i>
                             <span class="tracking-wide font-outfit">CLOCK OUT SHIFT</span>
                         </button>

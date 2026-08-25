@@ -54,9 +54,11 @@ class OvertimeAssign {
 
     public function getAll() {
         $this->autoUpdateStatuses();
-        $query = "SELECT oa.*, e.FirstName, e.LastName, e.ProfilePicture
+        $query = "SELECT oa.*, e.FirstName, e.LastName, e.ProfilePicture, d.DeptName
                   FROM " . $this->table . " oa
                   LEFT JOIN Employee e ON oa.EmpID = e.EmpID
+                  LEFT JOIN Position p ON e.PositionID = p.PositionID
+                  LEFT JOIN Department d ON p.DeptID = d.DeptID
                   ORDER BY oa.OvertimeID DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -147,7 +149,7 @@ class OvertimeAssign {
 
     public function getMonthlyHours($emp_id, $year, $month, $exclude_id = null) {
         $query = "SELECT SUM(TotalHours) as total_hours FROM " . $this->table . " 
-                  WHERE EmpID = :emp_id AND YEAR(OvertimeDate) = :year AND MONTH(OvertimeDate) = :month AND Status = 'Completed'";
+                  WHERE EmpID = :emp_id AND YEAR(OvertimeDate) = :year AND MONTH(OvertimeDate) = :month AND Status IN ('Completed', 'OT Full')";
         if ($exclude_id) {
             $query .= " AND OvertimeID != :exclude_id";
         }

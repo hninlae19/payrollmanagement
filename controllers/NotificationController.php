@@ -124,7 +124,7 @@ class NotificationController extends Controller {
                 // =========================================================
                 // 2. OVERTIME ASSIGNMENTS: Trigger on Pending, Accepted or Completed
                 // =========================================================
-                $stmt = $conn->prepare("SELECT OvertimeID, OvertimeDate, Status FROM overtimeassign WHERE EmpID = ? AND Status IN ('Pending', 'Accepted', 'Completed') ORDER BY OvertimeID DESC");
+                $stmt = $conn->prepare("SELECT OvertimeID, OvertimeDate, Status FROM overtimeassign WHERE EmpID = ? AND Status IN ('Pending', 'Accepted', 'Completed', 'OT Full') ORDER BY OvertimeID DESC");
                 $stmt->execute([$userId]);
                 $overtimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($overtimes as $ot) {

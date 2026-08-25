@@ -45,10 +45,55 @@ if (!empty($errorMsg)):
 <?php endif; ?>
 
 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="50">
+    <!-- FILTER SECTION -->
+    <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-filter text-slate-400"></i>
+            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Filter Assignments</span>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div class="relative w-full sm:w-64">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fa-solid fa-search text-slate-400 text-xs"></i>
+                </div>
+                <input type="text" id="filterName" placeholder="Search by name or ID..." class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-9 p-2.5 shadow-sm transition-all" onkeyup="filterTable()">
+            </div>
+            <div class="relative w-full sm:w-64">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fa-solid fa-building text-slate-400 text-xs"></i>
+                </div>
+                <select id="filterDept" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-9 p-2.5 shadow-sm transition-all appearance-none" onchange="filterTable()">
+                    <option value="">All Departments</option>
+                    <?php foreach($data['departments'] ?? [] as $dept): ?>
+                        <option value="<?= htmlspecialchars($dept['DeptName']) ?>"><?= htmlspecialchars($dept['DeptName']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
+                </div>
+            </div>
+            <div class="relative w-full sm:w-48">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fa-solid fa-calendar-day text-slate-400 text-xs"></i>
+                </div>
+                <select id="filterDayType" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-9 p-2.5 shadow-sm transition-all appearance-none" onchange="filterTable()">
+                    <option value="">All Days</option>
+                    <option value="Working Day">Working Day</option>
+                    <option value="Weekend">Weekend</option>
+                    <option value="Holiday">Holiday</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
             <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider">
                 <tr>
+                    <th scope="col" class="px-6 py-4 w-16">No.</th>
                     <th scope="col" class="px-6 py-4">Employee</th>
                     <th scope="col" class="px-6 py-4">Date</th>
                     <th scope="col" class="px-6 py-4">Time</th>
@@ -62,7 +107,7 @@ if (!empty($errorMsg)):
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60">
                 <?php if(empty($data['assignments'])): ?>
                     <tr class="bg-white dark:bg-slate-800">
-                        <td colspan="8" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                        <td colspan="9" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                             <div class="w-14 h-14 mx-auto bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-3 text-indigo-500">
                                 <i class="fa-solid fa-business-time text-2xl"></i>
                             </div>
@@ -70,8 +115,17 @@ if (!empty($errorMsg)):
                         </td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach($data['assignments'] as $ot): ?>
-                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group">
+                    <?php $count = 1; foreach($data['assignments'] as $ot): 
+                        $otDate = $ot['OvertimeDate'];
+                        $dayType = 'Working Day';
+                        if (HolidayHelper::isPublicHoliday($otDate)) {
+                            $dayType = 'Holiday';
+                        } elseif (HolidayHelper::isWeekend($otDate)) {
+                            $dayType = 'Weekend';
+                        }
+                    ?>
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group ot-row" data-name="<?= strtolower(htmlspecialchars($ot['FirstName'] . ' ' . $ot['LastName'] . ' emp-' . str_pad($ot['EmpID'], 4, '0', STR_PAD_LEFT))) ?>" data-dept="<?= htmlspecialchars($ot['DeptName'] ?? '') ?>" data-daytype="<?= $dayType ?>">
+                        <td class="px-6 py-3.5 font-bold text-slate-500 dark:text-slate-400 text-xs text-center"><?= $count++ ?></td>
                         <td class="px-6 py-3.5">
                             <div class="flex items-center gap-3">
                                 <?php if (!empty($ot['ProfilePicture'])): ?>
@@ -83,12 +137,21 @@ if (!empty($errorMsg)):
                                 <?php endif; ?>
                                 <div>
                                     <div class="font-bold text-slate-900 dark:text-white text-xs"><?= htmlspecialchars($ot['FirstName'] . ' ' . $ot['LastName']) ?></div>
-                                    <div class="text-[11px] text-indigo-600 dark:text-sky-400 font-mono font-semibold">EMP-<?= str_pad($ot['EmpID'], 4, '0', STR_PAD_LEFT) ?></div>
+                                    <div class="text-[11px] text-indigo-600 dark:text-sky-400 font-mono font-semibold">EMP-<?= str_pad($ot['EmpID'], 4, '0', STR_PAD_LEFT) ?> <span class="text-slate-400 dark:text-slate-500 ml-1 font-sans font-normal">• <?= htmlspecialchars($ot['DeptName'] ?? 'Unknown Dept') ?></span></div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-3.5 font-semibold text-slate-900 dark:text-white text-xs">
                             <?= date('M j, Y', strtotime($ot['OvertimeDate'])) ?>
+                            <div class="mt-1">
+                                <?php if($dayType === 'Holiday'): ?>
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-400 dark:border-rose-800">Holiday</span>
+                                <?php elseif($dayType === 'Weekend'): ?>
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-800">Weekend</span>
+                                <?php else: ?>
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600">Working Day</span>
+                                <?php endif; ?>
+                            </div>
                         </td>
                         <td class="px-6 py-3.5 font-mono text-xs text-slate-700 dark:text-slate-300">
                             <?php if ($ot['StartTime'] && $ot['EndTime']): ?>
@@ -119,6 +182,7 @@ if (!empty($errorMsg)):
                                     'In Progress' => 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800',
                                     'Completed' => 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/50 dark:text-teal-300 dark:border-teal-800',
                                     'Approved' => 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800',
+                                    'OT Full' => 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200 dark:bg-fuchsia-950/50 dark:text-fuchsia-300 dark:border-fuchsia-800',
                                     'NoOT' => 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600',
                                     'No OT' => 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600',
                                     'No Show' => 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600',
@@ -138,24 +202,24 @@ if (!empty($errorMsg)):
 
                         <td class="px-6 py-3.5 text-right">
                             <div class="flex items-center justify-end gap-1.5">
-                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Completed', 'Cancelled', 'No Show', 'NoOT', 'No OT', 'Rejected'])): ?>
-                                    <form action="/payrollsystem/admin/overtime_assignments" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Approve this overtime assignment as Completed?');">
+                                <?php if (($ot['Status'] ?? 'Pending') === 'Completed'): ?>
+                                    <form action="/payrollsystem/admin/overtime_assignments" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Approve this completed overtime assignment?');">
                                         <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
                                         <input type="hidden" name="action" value="approve">
                                         <input type="hidden" name="id" value="<?= $ot['OvertimeID'] ?>">
-                                        <button type="submit" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center transition-colors shadow-sm" title="Approve as Completed">
+                                        <button type="submit" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center transition-colors shadow-sm" title="Approve Overtime">
                                             <i class="fa-solid fa-check text-xs"></i>
                                         </button>
                                     </form>
                                 <?php endif; ?>
                                 
-                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Approved', 'Completed', 'Cancelled', 'No Show', 'NoOT', 'No OT'])): ?>
+                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Approved', 'OT Full', 'Completed', 'Cancelled', 'No Show', 'NoOT', 'No OT'])): ?>
                                 <button onclick="editModal(<?= htmlspecialchars(json_encode($ot)) ?>)" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-400 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center transition-colors shadow-sm" title="Edit">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
                                 <?php endif; ?>
                                 
-                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Completed', 'Cancelled', 'No Show', 'NoOT', 'No OT', 'Rejected'])): ?>
+                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Completed', 'Approved', 'OT Full', 'Cancelled', 'No Show', 'NoOT', 'No OT', 'Rejected'])): ?>
                                 <form action="/payrollsystem/admin/overtime_assignments" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Cancel this assignment?');">
                                     <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
                                     <input type="hidden" name="action" value="cancel">
@@ -517,4 +581,59 @@ if (!empty($errorMsg)):
     function closeModal() {
         document.getElementById('assignmentModal').classList.add('hidden');
     }
+
+    function filterTable() {
+        let nameFilter = document.getElementById('filterName').value.toLowerCase();
+        let deptFilter = document.getElementById('filterDept').value;
+        let dayTypeFilter = document.getElementById('filterDayType').value;
+        let rows = document.querySelectorAll('.ot-row');
+        
+        rows.forEach(row => {
+            let nameAttr = row.getAttribute('data-name') || '';
+            let deptAttr = row.getAttribute('data-dept') || '';
+            let dayTypeAttr = row.getAttribute('data-daytype') || '';
+            
+            let nameMatch = nameFilter === '' || nameAttr.includes(nameFilter);
+            let deptMatch = deptFilter === '' || deptAttr === deptFilter;
+            let dayTypeMatch = dayTypeFilter === '' || dayTypeAttr === dayTypeFilter;
+            
+            if (nameMatch && deptMatch && dayTypeMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    <?php if(isset($_GET['assign_type_error']) && isset($_GET['error'])): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        openModal();
+        
+        // Hide the main alert at the top
+        let mainAlerts = document.querySelectorAll('.animate__shakeX');
+        mainAlerts.forEach(alert => alert.style.display = 'none');
+        
+        let errorType = <?= json_encode($_GET['assign_type_error']) ?>;
+        let errorMessage = <?= json_encode($_GET['error']) ?>;
+        
+        // Switch to the correct assign type
+        if (errorType === 'department') {
+            document.querySelector('input[name="assign_type"][value="department"]').click();
+        } else {
+            document.querySelector('input[name="assign_type"][value="individual"]').click();
+        }
+        
+        // Create error element
+        let errorDiv = document.createElement('div');
+        errorDiv.className = 'mt-2 p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 text-[11px] font-bold flex items-start gap-2 animate__animated animate__fadeIn';
+        errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mt-0.5"></i> <span>' + errorMessage + '</span>';
+        
+        // Append error to the correct container
+        if (errorType === 'department') {
+            document.getElementById('dept_container').appendChild(errorDiv);
+        } else {
+            document.getElementById('emp_container').appendChild(errorDiv);
+        }
+    });
+    <?php endif; ?>
 </script>
