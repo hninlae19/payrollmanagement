@@ -42,6 +42,18 @@
 </div>
 <?php endif; ?>
 
+<!-- Controls Bar -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4 mb-6">
+    <div class="flex items-center bg-slate-100 dark:bg-slate-900/50 p-1 rounded-xl w-full lg:w-auto">
+        <a href="?view=active" class="flex-1 lg:flex-none text-center px-4 py-2 rounded-lg text-xs font-bold transition-all <?= ($data['viewMode'] ?? 'active') === 'active' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-sky-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200' ?>">
+            <i class="fa-solid fa-check-circle mr-1"></i> Active
+        </a>
+        <a href="?view=inactive" class="flex-1 lg:flex-none text-center px-4 py-2 rounded-lg text-xs font-bold transition-all <?= ($data['viewMode'] ?? 'active') === 'inactive' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-sky-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200' ?>">
+            <i class="fa-solid fa-archive mr-1"></i> Archived
+        </a>
+    </div>
+</div>
+
 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="50">
     <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
         <thead class="text-xs uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider">
@@ -100,14 +112,25 @@
                         <button onclick="editLeaveType(<?= $lt['LeaveTypeID'] ?>, '<?= htmlspecialchars(addslashes($lt['LeaveType'])) ?>', <?= $lt['DaysAllowed'] ?>, <?= $lt['IsPaid'] ? 1 : 0 ?>, <?= $lt['DeductionRate'] ?>, <?= $lt['DurationMonths'] ?>)" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-400 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 inline-flex items-center justify-center transition-colors shadow-sm" title="Edit">
                             <i class="fa-solid fa-pen text-xs"></i>
                         </button>
-                        <form action="/payrollsystem/admin/leave_types" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this leave type?');">
-                            <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="id" value="<?= $lt['LeaveTypeID'] ?>">
-                            <button type="submit" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800 inline-flex items-center justify-center transition-colors shadow-sm" title="Delete">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
-                        </form>
+                        <?php if(($data['viewMode'] ?? 'active') === 'active'): ?>
+                            <form action="/payrollsystem/admin/leave_types?view=active" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this leave type?');">
+                                <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="id" value="<?= $lt['LeaveTypeID'] ?>">
+                                <button type="submit" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-400 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800 inline-flex items-center justify-center transition-colors shadow-sm" title="Delete">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <form action="/payrollsystem/admin/leave_types?view=inactive" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to restore this leave type?');">
+                                <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
+                                <input type="hidden" name="action" value="restore">
+                                <input type="hidden" name="id" value="<?= $lt['LeaveTypeID'] ?>">
+                                <button type="submit" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 inline-flex items-center justify-center transition-colors shadow-sm" title="Restore">
+                                    <i class="fa-solid fa-rotate-left text-xs"></i>
+                                </button>
+                            </form>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -134,7 +157,11 @@
             <div class="space-y-4">
                 <div>
                     <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Leave Type Name</label>
-                    <input type="text" name="name" id="name" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm" placeholder="e.g. Annual Vacation, Sick Leave">
+                    <input type="text" name="name" id="name" required oninput="validateAddLeaveName(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm transition-all" placeholder="e.g. Annual Vacation, Sick Leave">
+                    <p id="add_leave_error" class="hidden text-rose-500 text-xs font-bold mt-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>A leave type with this name already exists.</span>
+                    </p>
                 </div>
                 <div>
                     <label for="days" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Days Allowed Per Year</label>
@@ -156,7 +183,7 @@
 
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
                 <button type="button" onclick="document.getElementById('addModal').classList.add('hidden')" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
-                <button type="submit" class="px-5 py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-xl shadow-lg shadow-indigo-500/25 transition-all">Save Leave Type</button>
+                <button type="submit" id="add_leave_submit" class="px-5 py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-xl shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed">Save Leave Type</button>
             </div>
         </form>
     </div>
@@ -181,7 +208,11 @@
             <div class="space-y-4">
                 <div>
                     <label for="edit_name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Leave Type Name</label>
-                    <input type="text" name="name" id="edit_name" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+                    <input type="text" name="name" id="edit_name" required oninput="validateEditLeaveName(this.value)" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm transition-all">
+                    <p id="edit_leave_error" class="hidden text-rose-500 text-xs font-bold mt-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>A leave type with this name already exists.</span>
+                    </p>
                 </div>
                 <div>
                     <label for="edit_days" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Days Allowed</label>
@@ -203,13 +234,15 @@
 
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
                 <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
-                <button type="submit" class="px-5 py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-xl shadow-lg shadow-indigo-500/25 transition-all">Update Leave Type</button>
+                <button type="submit" id="edit_leave_submit" class="px-5 py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-xl shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed">Update Leave Type</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    const leaveTypesList = <?= json_encode($data['leaveTypes'] ?? []) ?>;
+
     function editLeaveType(id, name, days, isPaid, deductionRate, durationMonths) {
         document.getElementById('edit_id').value = id;
         document.getElementById('edit_name').value = name;
@@ -217,6 +250,58 @@
         document.getElementById('edit_is_paid').checked = isPaid === 1;
         document.getElementById('edit_deduction_rate').value = deductionRate;
         document.getElementById('edit_duration_months').value = durationMonths;
+        document.getElementById('edit_leave_error').classList.add('hidden');
+        document.getElementById('edit_name').classList.remove('border-rose-500', 'focus:ring-rose-500/20', 'focus:border-rose-500');
+        document.getElementById('edit_leave_submit').disabled = false;
         document.getElementById('editModal').classList.remove('hidden');
     }
+
+    function validateAddLeaveName(val) {
+        const trimmed = val.trim().toLowerCase();
+        const errorEl = document.getElementById('add_leave_error');
+        const submitBtn = document.getElementById('add_leave_submit');
+        const inputEl = document.getElementById('name');
+
+        const exists = leaveTypesList.some(lt => lt.LeaveType.trim().toLowerCase() === trimmed);
+        if (exists && trimmed.length > 0) {
+            errorEl.classList.remove('hidden');
+            inputEl.classList.add('border-rose-500', 'focus:ring-rose-500/20', 'focus:border-rose-500');
+            submitBtn.disabled = true;
+        } else {
+            errorEl.classList.add('hidden');
+            inputEl.classList.remove('border-rose-500', 'focus:ring-rose-500/20', 'focus:border-rose-500');
+            submitBtn.disabled = false;
+        }
+    }
+
+    function validateEditLeaveName(val) {
+        const currentId = document.getElementById('edit_id').value;
+        const trimmed = val.trim().toLowerCase();
+        const errorEl = document.getElementById('edit_leave_error');
+        const submitBtn = document.getElementById('edit_leave_submit');
+        const inputEl = document.getElementById('edit_name');
+
+        const exists = leaveTypesList.some(lt => lt.LeaveTypeID != currentId && lt.LeaveType.trim().toLowerCase() === trimmed);
+        if (exists && trimmed.length > 0) {
+            errorEl.classList.remove('hidden');
+            inputEl.classList.add('border-rose-500', 'focus:ring-rose-500/20', 'focus:border-rose-500');
+            submitBtn.disabled = true;
+        } else {
+            errorEl.classList.add('hidden');
+            inputEl.classList.remove('border-rose-500', 'focus:ring-rose-500/20', 'focus:border-rose-500');
+            submitBtn.disabled = false;
+        }
+    }
+
+    // Handle resetting add modal state when opening
+    document.querySelector('button[onclick="document.getElementById(\'addModal\').classList.remove(\'hidden\')"]').addEventListener('click', function() {
+        document.getElementById('name').value = '';
+        document.getElementById('days').value = '';
+        document.getElementById('is_paid').checked = false;
+        document.getElementById('deduction_rate').value = '0.00';
+        document.getElementById('duration_months').value = '0';
+        document.getElementById('add_leave_error').classList.add('hidden');
+        document.getElementById('name').classList.remove('border-rose-500', 'focus:ring-rose-500/20', 'focus:border-rose-500');
+        document.getElementById('add_leave_submit').disabled = false;
+    });
 </script>

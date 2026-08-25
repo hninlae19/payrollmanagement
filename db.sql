@@ -128,6 +128,7 @@ CREATE TABLE `leavetypes` (
   `IsPaid` tinyint(1) NOT NULL DEFAULT '1',
   `DeductionRate` decimal(10,2) NOT NULL DEFAULT '0.00',
   `DurationMonths` int NOT NULL DEFAULT '0',
+  `Status` enum('Active','Inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Active',
   PRIMARY KEY (`LeaveTypeID`),
   UNIQUE KEY `uq_leavetype_name` (`LeaveType`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

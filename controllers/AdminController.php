@@ -725,25 +725,24 @@ class AdminController extends Controller {
                     $leaveTypeModel->DurationMonths = (int)($_POST['duration_months'] ?? 0);
                     $leaveTypeModel->update();
                 } elseif ($_POST['action'] === 'delete') {
-                    if ($leaveTypeModel->hasUsage($_POST['id'])) {
-                        $this->redirect('/payrollsystem/admin/leave_types?error=in_use');
-                        return;
-                    }
-                    if (!$leaveTypeModel->delete($_POST['id'])) {
-                        $this->redirect('/payrollsystem/admin/leave_types?error=in_use');
-                        return;
-                    }
+                    $leaveTypeModel->delete($_POST['id']);
+                } elseif ($_POST['action'] === 'restore') {
+                    $leaveTypeModel->restore($_POST['id']);
                 }
             }
-            $this->redirect('/payrollsystem/admin/leave_types');
+            $viewMode = $_GET['view'] ?? 'active';
+            $this->redirect('/payrollsystem/admin/leave_types?view=' . $viewMode);
         }
 
-        $leaveTypes = $leaveTypeModel->getAll();
+        $viewMode = $_GET['view'] ?? 'active';
+        $statusFilter = $viewMode === 'inactive' ? 'Inactive' : 'Active';
+        $leaveTypes = $leaveTypeModel->getAll($statusFilter);
 
         $this->view('layouts/main', [
             'title' => 'Leave Types',
             'content' => 'admin/leave_types',
-            'leaveTypes' => $leaveTypes
+            'leaveTypes' => $leaveTypes,
+            'viewMode' => $viewMode
         ]);
     }
 

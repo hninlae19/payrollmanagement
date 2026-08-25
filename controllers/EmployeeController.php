@@ -214,6 +214,12 @@ class EmployeeController extends Controller {
                     return;
                 }
 
+                if (!$leaveTypeModel->isActive($_POST['leave_type_id'])) {
+                    $_SESSION['leave_error'] = "Leave request failed: The selected leave type is no longer available.";
+                    $this->redirect('/payrollsystem/employee/leaves');
+                    return;
+                }
+
                 $leaveRequestModel->LeaveTypeID = $_POST['leave_type_id'];
                 $leaveRequestModel->EmpID = $emp_id;
                 $leaveRequestModel->StartDate = $start_date;
@@ -234,7 +240,7 @@ class EmployeeController extends Controller {
         }
 
         $leaveRequests = $leaveRequestModel->getByEmployee($emp_id);
-        $leaveTypes = $leaveTypeModel->getAll();
+        $leaveTypes = $leaveTypeModel->getAll('Active');
 
         $employee = $this->model('Employee')->getEmployeeById($emp_id);
         $joinDate = new DateTime($employee['JoinDate']);

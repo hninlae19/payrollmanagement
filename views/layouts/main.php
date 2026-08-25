@@ -480,9 +480,7 @@
                     <?php if (!empty($_SESSION['profile_picture'])): ?>
                         <img src="/payrollsystem/assets/uploads/profiles/<?= htmlspecialchars($_SESSION['profile_picture']) ?>" alt="Profile" class="w-8 h-8 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform">
                     <?php else: ?>
-                        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-sky-500 flex items-center justify-center font-extrabold text-white text-xs shadow-sm group-hover:scale-105 transition-transform">
-                            <?= htmlspecialchars(strtoupper(substr($_SESSION['Email'] ?? ($_SESSION['first_name'] ?? 'U'), 0, 1))) ?>
-                        </div>
+                        <img src="/payrollsystem/assets/img/system_brand_badge.jpg" alt="APMS Logo" class="w-8 h-8 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform">
                     <?php endif; ?>
                     <div class="hidden sm:block text-left">
                         <div class="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">

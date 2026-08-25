@@ -17,7 +17,7 @@
             <p class="text-indigo-100 text-xs sm:text-sm mt-1">Review employee leave applications, grant approvals, or decline requests with administrative remarks.</p>
         </div>
         <div class="flex gap-2">
-            <a href="/payrollsystem/admin/leaveTypes" class="px-5 py-2.5 rounded-xl bg-white text-indigo-700 hover:bg-slate-50 text-xs font-extrabold shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+            <a href="/payrollsystem/admin/leave_types" class="px-5 py-2.5 rounded-xl bg-white text-indigo-700 hover:bg-slate-50 text-xs font-extrabold shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
                 <i class="fa-solid fa-sliders text-indigo-600"></i>
                 <span>Configure Leave Types</span>
             </a>

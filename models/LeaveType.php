@@ -17,9 +17,15 @@ class LeaveType {
         $this->conn = $database->getConnection();
     }
 
-    public function getAll() {
+    public function getAll($status = null) {
         $query = "SELECT * FROM " . $this->table;
+        if ($status !== null) {
+            $query .= " WHERE Status = :status";
+        }
         $stmt = $this->conn->prepare($query);
+        if ($status !== null) {
+            $stmt->bindParam(':status', $status);
+        }
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -52,13 +58,32 @@ class LeaveType {
 
     public function delete($id) {
         try {
-            $query = "DELETE FROM " . $this->table . " WHERE LeaveTypeID = :id";
+            $query = "UPDATE " . $this->table . " SET Status = 'Inactive' WHERE LeaveTypeID = :id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id', $id);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;
         }
+    }
+
+    public function restore($id) {
+        try {
+            $query = "UPDATE " . $this->table . " SET Status = 'Active' WHERE LeaveTypeID = :id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id', $id);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function isActive($id) {
+        $query = "SELECT Status FROM " . $this->table . " WHERE LeaveTypeID = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetchColumn() === 'Active';
     }
 
     public function hasUsage($id) {

@@ -86,6 +86,26 @@ if (!empty($errorMsg)):
                     <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
                 </div>
             </div>
+            <div class="relative w-full sm:w-48">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fa-solid fa-circle-half-stroke text-slate-400 text-xs"></i>
+                </div>
+                <select id="filterStatus" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-9 p-2.5 shadow-sm transition-all appearance-none" onchange="filterTable()">
+                    <option value="">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Approved">Approved</option>
+                    <option value="OT Full">OT Full</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="No Show">No Show</option>
+                    <option value="No OT">No OT</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -124,7 +144,7 @@ if (!empty($errorMsg)):
                             $dayType = 'Weekend';
                         }
                     ?>
-                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group ot-row" data-name="<?= strtolower(htmlspecialchars($ot['FirstName'] . ' ' . $ot['LastName'] . ' emp-' . str_pad($ot['EmpID'], 4, '0', STR_PAD_LEFT))) ?>" data-dept="<?= htmlspecialchars($ot['DeptName'] ?? '') ?>" data-daytype="<?= $dayType ?>">
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group ot-row" data-name="<?= strtolower(htmlspecialchars($ot['FirstName'] . ' ' . $ot['LastName'] . ' emp-' . str_pad($ot['EmpID'], 4, '0', STR_PAD_LEFT))) ?>" data-dept="<?= htmlspecialchars($ot['DeptName'] ?? '') ?>" data-daytype="<?= $dayType ?>" data-status="<?= htmlspecialchars($ot['Status'] === 'NoOT' ? 'No OT' : ($ot['Status'] === 'InProgress' ? 'In Progress' : ($ot['Status'] ?? 'Pending'))) ?>">
                         <td class="px-6 py-3.5 font-bold text-slate-500 dark:text-slate-400 text-xs text-center"><?= $count++ ?></td>
                         <td class="px-6 py-3.5">
                             <div class="flex items-center gap-3">
@@ -586,18 +606,21 @@ if (!empty($errorMsg)):
         let nameFilter = document.getElementById('filterName').value.toLowerCase();
         let deptFilter = document.getElementById('filterDept').value;
         let dayTypeFilter = document.getElementById('filterDayType').value;
+        let statusFilter = document.getElementById('filterStatus').value;
         let rows = document.querySelectorAll('.ot-row');
         
         rows.forEach(row => {
             let nameAttr = row.getAttribute('data-name') || '';
             let deptAttr = row.getAttribute('data-dept') || '';
             let dayTypeAttr = row.getAttribute('data-daytype') || '';
+            let statusAttr = row.getAttribute('data-status') || '';
             
             let nameMatch = nameFilter === '' || nameAttr.includes(nameFilter);
             let deptMatch = deptFilter === '' || deptAttr === deptFilter;
             let dayTypeMatch = dayTypeFilter === '' || dayTypeAttr === dayTypeFilter;
+            let statusMatch = statusFilter === '' || statusAttr === statusFilter;
             
-            if (nameMatch && deptMatch && dayTypeMatch) {
+            if (nameMatch && deptMatch && dayTypeMatch && statusMatch) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
