@@ -160,23 +160,88 @@ class Payroll {
             $stmt->execute([':emp' => $empId, ':sd' => $startDate, ':ed' => $endDate]);
             $p['ot_hours'] = $stmt->fetchColumn() ?: 0;
             
+            // Fetch LeaveTypes for limits
+            $stmt = $this->conn->query("SELECT * FROM leavetypes");
+            $leaveTypes = [];
+            foreach($stmt->fetchAll(PDO::FETCH_ASSOC) as $lt) {
+                $leaveTypes[$lt['LeaveTypeID']] = $lt;
+            }
+
             // Leave stats
             $stmt = $this->conn->prepare("
-                SELECT StartDate, EndDate 
+                SELECT LeaveTypeID, StartDate, EndDate 
                 FROM leaverequest 
                 WHERE EmpID = :emp AND Status = 'Approved'
                 AND StartDate <= :ed AND EndDate >= :sd
             ");
             $stmt->execute([':emp' => $empId, ':sd' => $startDate, ':ed' => $endDate]);
             $leavesThisMonth = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
             $leaveDaysInMonth = 0;
+            $usedByThisMonthType = [];
+            
             foreach ($leavesThisMonth as $lr) {
                 $lrStart = max(strtotime($startDate), strtotime($lr['StartDate']));
                 $lrEnd = min(strtotime($endDate), strtotime($lr['EndDate']));
                 $days = round(($lrEnd - $lrStart) / (60 * 60 * 24)) + 1;
-                if ($days > 0) $leaveDaysInMonth += $days;
+                if ($days > 0) {
+                    $leaveDaysInMonth += $days;
+                    $typeId = $lr['LeaveTypeID'];
+                    if(!isset($usedByThisMonthType[$typeId])) $usedByThisMonthType[$typeId] = 0;
+                    $usedByThisMonthType[$typeId] += $days;
+                }
             }
-            $p['leave_days'] = $leaveDaysInMonth;
+            
+            $totalUnpaidLeaveDays = 0;
+            $totalPaidLeaveDays = 0;
+            $totalAllowedLeaveDays = 0;
+            
+            foreach($usedByThisMonthType as $typeId => $daysThisMonth) {
+                $lt = $leaveTypes[$typeId] ?? null;
+                if (!$lt) continue;
+                
+                $yearStart = "$year-01-01";
+                $priorMonthEnd = date("Y-m-d", strtotime($startDate . " -1 day"));
+                
+                $stmt = $this->conn->prepare("
+                    SELECT SUM(DATEDIFF(LEAST(EndDate, :pme), GREATEST(StartDate, :ys)) + 1)
+                    FROM leaverequest
+                    WHERE EmpID = :emp AND LeaveTypeID = :lt AND Status = 'Approved'
+                    AND StartDate <= :pme AND EndDate >= :ys
+                ");
+                $stmt->execute([':emp' => $empId, ':lt' => $typeId, ':pme' => $priorMonthEnd, ':ys' => $yearStart]);
+                $priorDays = $stmt->fetchColumn() ?: 0;
+                
+                if ($lt['IsPaid'] == 0) {
+                    $totalUnpaidLeaveDays += $daysThisMonth;
+                    continue;
+                }
+                
+                $limit = $lt['DaysAllowed'];
+                $totalAllowedLeaveDays += $limit;
+                
+                if ($limit >= 999) { 
+                    $totalPaidLeaveDays += $daysThisMonth;
+                    continue; 
+                }
+                
+                $available = max(0, $limit - $priorDays);
+                $excessDays = max(0, $daysThisMonth - $available);
+                
+                if ($excessDays > 0) {
+                    $totalUnpaidLeaveDays += $excessDays;
+                    $totalPaidLeaveDays += ($daysThisMonth - $excessDays);
+                } else {
+                    $totalPaidLeaveDays += $daysThisMonth;
+                }
+            }
+            
+            $p['leave_days'] = $leaveDaysInMonth; // Actual Leave Days
+            $p['paid_leave_days'] = $totalPaidLeaveDays;
+            $p['unpaid_leave_days'] = $totalUnpaidLeaveDays;
+            $p['allowed_paid_leave_days'] = $totalAllowedLeaveDays;
+            $p['unpaid_amount'] = $p['LeaveDeductionAmount'];
+            $p['other_deductions'] = $totalAttendanceDeduction;
         }
         return $payrolls;
     }

@@ -27,10 +27,15 @@
 
 <!-- Filters Section -->
 <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 mb-6 border border-slate-200 dark:border-slate-700 shadow-sm" data-aos="fade-up" data-aos-delay="50">
-    <form method="GET" action="/payrollsystem/admin/leaves" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <form method="GET" action="/payrollsystem/admin/leaves" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Search Employee</label>
-            <input type="text" name="search" value="<?= htmlspecialchars($data['filters']['search']) ?>" placeholder="Name or employee code..." class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+            <div class="relative">
+                <input type="text" name="search" value="<?= htmlspecialchars($data['filters']['search']) ?>" placeholder="Name or employee code..." class="w-full px-3.5 py-2.5 pr-10 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+                <button type="submit" class="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-indigo-600 transition-colors">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+            </div>
         </div>
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Department</label>
@@ -44,6 +49,24 @@
         <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Application Date</label>
             <input type="date" name="date" value="<?= htmlspecialchars($data['filters']['date'] ?? '') ?>" onchange="this.form.submit()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+        </div>
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
+            <select name="status" onchange="this.form.submit()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm cursor-pointer">
+                <option value="">All Statuses</option>
+                <option value="Pending" <?= ($data['filters']['status'] ?? '') == 'Pending' ? 'selected' : '' ?>>Pending</option>
+                <option value="Approved" <?= ($data['filters']['status'] ?? '') == 'Approved' ? 'selected' : '' ?>>Approved</option>
+                <option value="Rejected" <?= ($data['filters']['status'] ?? '') == 'Rejected' ? 'selected' : '' ?>>Rejected</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Leave Type</label>
+            <select name="leave_type" onchange="this.form.submit()" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm cursor-pointer">
+                <option value="">All Types</option>
+                <?php foreach($data['leaveTypes'] ?? [] as $lt): ?>
+                    <option value="<?= $lt['LeaveTypeID'] ?>" <?= ($data['filters']['leave_type'] ?? '') == $lt['LeaveTypeID'] ? 'selected' : '' ?>><?= htmlspecialchars($lt['LeaveType']) ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div class="flex items-end gap-2">
             <a href="/payrollsystem/admin/leaves" class="w-full py-2.5 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white font-bold rounded-xl text-xs transition-colors shadow-sm flex items-center justify-center gap-1.5">

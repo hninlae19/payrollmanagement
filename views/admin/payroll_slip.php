@@ -201,14 +201,39 @@ $leaveOnlyDeduction = max(0, $totalDeductions - ($p['total_attendance_deduction'
                     <span class="text-slate-600">Late Arrival (<?= number_format($p['late_hours'] ?? 0, 2) ?>h &times; <?= number_format($p['hourly_rate'] ?? 0) ?>)</span>
                     <span class="font-mono font-bold text-rose-600">-<?= number_format($p['late_deduction'] ?? 0) ?> MMK</span>
                 </div>
-                <?php if ($leaveOnlyDeduction > 0): ?>
-                <div class="flex justify-between py-0.5">
-                    <span class="text-slate-600">Unpaid / Excess Leave Deductions</span>
-                    <span class="font-mono font-bold text-rose-600">-<?= number_format($leaveOnlyDeduction) ?> MMK</span>
+                
+                <div class="flex justify-between pt-2 border-t border-slate-200 font-bold text-slate-900 text-[10px]">
+                    <span class="uppercase tracking-wider">Other Deductions (Attendance)</span>
+                    <span class="font-mono text-rose-600">-<?= number_format($p['other_deductions'] ?? 0) ?> MMK</span>
+                </div>
+
+                <?php if ($leaveOnlyDeduction > 0 || ($p['unpaid_leave_days'] ?? 0) > 0): ?>
+                <div class="mt-3 pt-3 border-t border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Leave Calculation Breakdown</span>
+                    <div class="flex justify-between py-0.5 text-[11px]">
+                        <span class="text-slate-600">Allowed Paid Leave Days</span>
+                        <span class="font-mono font-bold text-slate-700"><?= $p['allowed_paid_leave_days'] ?? 0 ?> days</span>
+                    </div>
+                    <div class="flex justify-between py-0.5 text-[11px]">
+                        <span class="text-slate-600">Actual Leave Days Taken</span>
+                        <span class="font-mono font-bold text-slate-700"><?= $p['leave_days'] ?? 0 ?> days</span>
+                    </div>
+                    <div class="flex justify-between py-0.5 text-[11px]">
+                        <span class="text-slate-600">Paid Leave Days</span>
+                        <span class="font-mono font-bold text-emerald-600"><?= $p['paid_leave_days'] ?? 0 ?> days</span>
+                    </div>
+                    <div class="flex justify-between py-0.5 text-[11px]">
+                        <span class="text-slate-600">Unpaid Leave Days (Excess)</span>
+                        <span class="font-mono font-bold text-rose-600"><?= $p['unpaid_leave_days'] ?? 0 ?> days</span>
+                    </div>
+                    <div class="flex justify-between py-1 mt-1 border-t border-slate-100">
+                        <span class="text-slate-700 font-medium text-xs">Unpaid Amount Deducted</span>
+                        <span class="font-mono font-bold text-rose-600 text-xs">-<?= number_format($p['unpaid_amount'] ?? $leaveOnlyDeduction) ?> MMK</span>
+                    </div>
                 </div>
                 <?php endif; ?>
                 
-                <div class="flex justify-between pt-2 border-t border-slate-200 font-bold text-slate-900 text-xs">
+                <div class="flex justify-between pt-2 border-t border-slate-200 font-bold text-slate-900 text-xs mt-2">
                     <span>Total Deductions</span>
                     <span class="font-mono text-rose-600">-<?= number_format($totalDeductions) ?> MMK</span>
                 </div>

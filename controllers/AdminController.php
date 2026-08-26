@@ -683,12 +683,14 @@ class AdminController extends Controller {
         }
 
         $departments = $departmentModel->getAll();
+        $leaveTypes = $this->model('LeaveType')->getAll();
 
         $this->view('layouts/main', [
             'title' => 'Leave Management',
             'content' => 'admin/leaves',
             'leaveRequests' => $leaveRequests,
             'departments' => $departments,
+            'leaveTypes' => $leaveTypes,
             'filters' => $filters,
             'page' => 1,
             'total_pages' => 1
@@ -1279,7 +1281,7 @@ class AdminController extends Controller {
                         
                         // Check if it's strictly unpaid leave
                         if ($lt['IsPaid'] == 0) {
-                            $leaveDeductionAmount += $daysThisMonth * $lt['DeductionRate'];
+                            $leaveDeductionAmount += $daysThisMonth * $dailySalary;
                             continue;
                         }
 
@@ -1292,7 +1294,7 @@ class AdminController extends Controller {
                         $excessDays = max(0, $daysThisMonth - $available);
                         
                         if ($excessDays > 0) {
-                            $deduction = $excessDays * $lt['DeductionRate'];
+                            $deduction = $excessDays * $dailySalary;
                             $leaveDeductionAmount += $deduction;
                         }
                     }

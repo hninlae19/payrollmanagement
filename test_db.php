@@ -5,12 +5,9 @@ try {
     $db = new Database();
     $conn = $db->getConnection();
     
-    $stmt = $conn->query("SELECT * FROM leavetypes");
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo "<pre>";
-    print_r($result);
-    echo "</pre>";
+    $stmt = $conn->query("SELECT * FROM payroll WHERE EmpID = 5 ORDER BY PayrollID DESC");
+    print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
     
-} catch (PDOException $e) {
+} catch (Exception $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
