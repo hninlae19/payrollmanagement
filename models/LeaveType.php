@@ -11,6 +11,7 @@ class LeaveType {
     public $IsPaid;
     public $DeductionRate;
     public $DurationMonths;
+    public $Gender;
 
     public function __construct() {
         $database = new Database();
@@ -32,9 +33,10 @@ class LeaveType {
 
     public function create() {
         $query = "INSERT INTO " . $this->table . " 
-                  SET LeaveType = :name, DaysAllowed = :days, IsPaid = :paid, DeductionRate = :rate, DurationMonths = :duration";
+                  SET LeaveType = :name, Gender = :gender, DaysAllowed = :days, IsPaid = :paid, DeductionRate = :rate, DurationMonths = :duration";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':name', $this->LeaveType);
+        $stmt->bindParam(':gender', $this->Gender);
         $stmt->bindParam(':days', $this->DaysAllowed);
         $stmt->bindParam(':paid', $this->IsPaid);
         $stmt->bindParam(':rate', $this->DeductionRate);
@@ -44,10 +46,11 @@ class LeaveType {
 
     public function update() {
         $query = "UPDATE " . $this->table . " 
-                  SET LeaveType = :name, DaysAllowed = :days, IsPaid = :paid, DeductionRate = :rate, DurationMonths = :duration 
+                  SET LeaveType = :name, Gender = :gender, DaysAllowed = :days, IsPaid = :paid, DeductionRate = :rate, DurationMonths = :duration 
                   WHERE LeaveTypeID = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':name', $this->LeaveType);
+        $stmt->bindParam(':gender', $this->Gender);
         $stmt->bindParam(':days', $this->DaysAllowed);
         $stmt->bindParam(':paid', $this->IsPaid);
         $stmt->bindParam(':rate', $this->DeductionRate);
@@ -110,5 +113,13 @@ class LeaveType {
         }
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
+    }
+
+    public function getById($id) {
+        $query = "SELECT * FROM " . $this->table . " WHERE LeaveTypeID = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

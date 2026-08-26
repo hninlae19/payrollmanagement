@@ -124,6 +124,7 @@ DROP TABLE IF EXISTS `leavetypes`;
 CREATE TABLE `leavetypes` (
   `LeaveTypeID` int NOT NULL AUTO_INCREMENT,
   `LeaveType` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Gender` enum('Male','Female','Both') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Both',
   `DaysAllowed` int NOT NULL DEFAULT '0',
   `IsPaid` tinyint(1) NOT NULL DEFAULT '1',
   `DeductionRate` decimal(10,2) NOT NULL DEFAULT '0.00',
@@ -230,12 +231,12 @@ INSERT INTO `employee` (`EmpID`, `FirstName`, `LastName`, `Gender`, `Email`, `Pa
 (5, 'Ei', 'Mon', 'Female', 'eimon@gmail.com', '$2y$10$4yY3U0kLzH4qQd4wHkR3w.Qo3d8d3I3n.5X5n3c3I3n.5X5n3c3I3', '09-970334455', 'No. 23, Insein Road, Insein, Yangon', 6, '2025-09-01', 'Active', NULL, 0, 1);
 
 -- 5. Leave Types
-INSERT INTO `leavetypes` (`LeaveTypeID`, `LeaveType`, `DaysAllowed`, `IsPaid`, `DeductionRate`, `DurationMonths`) VALUES
-(1, 'Casual Leave', 12, 1, 0.00, 12),
-(2, 'Sick Leave', 14, 1, 0.00, 12),
-(3, 'Annual Leave', 10, 1, 0.00, 12),
-(4, 'Maternity Leave', 90, 1, 0.00, 12),
-(5, 'Unpaid Personal Leave', 30, 0, 100.00, 12);
+INSERT INTO `leavetypes` (`LeaveTypeID`, `LeaveType`, `Gender`, `DaysAllowed`, `IsPaid`, `DeductionRate`, `DurationMonths`) VALUES
+(1, 'Casual Leave', 'Both', 12, 1, 0.00, 12),
+(2, 'Sick Leave', 'Both', 14, 1, 0.00, 12),
+(3, 'Annual Leave', 'Both', 10, 1, 0.00, 12),
+(4, 'Maternity Leave', 'Female', 90, 1, 0.00, 12),
+(5, 'Unpaid Personal Leave', 'Both', 30, 0, 100.00, 12);
 
 -- 6. Bonus Types
 INSERT INTO `bonous` (`BonousID`, `BonusType`) VALUES

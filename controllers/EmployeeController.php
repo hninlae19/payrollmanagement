@@ -220,6 +220,14 @@ class EmployeeController extends Controller {
                     return;
                 }
 
+                $leaveType = $leaveTypeModel->getById($_POST['leave_type_id']);
+                $employee = $this->model('Employee')->getEmployeeById($emp_id);
+                if ($leaveType['Gender'] !== 'Both' && $leaveType['Gender'] !== $employee['Gender']) {
+                    $_SESSION['leave_error'] = "Leave request failed: This leave type is not applicable to your gender.";
+                    $this->redirect('/payrollsystem/employee/leaves');
+                    return;
+                }
+
                 $leaveRequestModel->LeaveTypeID = $_POST['leave_type_id'];
                 $leaveRequestModel->EmpID = $emp_id;
                 $leaveRequestModel->StartDate = $start_date;
@@ -250,6 +258,10 @@ class EmployeeController extends Controller {
 
         $leaveBalances = [];
         foreach ($leaveTypes as $type) {
+            if ($type['Gender'] !== 'Both' && $type['Gender'] !== $employee['Gender']) {
+                continue;
+            }
+
             $used = $leaveRequestModel->getUsedDays($emp_id, $type['LeaveTypeID']);
             
             // Check if employee has worked long enough for this leave type

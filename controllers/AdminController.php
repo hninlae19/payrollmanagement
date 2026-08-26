@@ -707,6 +707,7 @@ class AdminController extends Controller {
                         return;
                     }
                     $leaveTypeModel->LeaveType = $_POST['name'];
+                    $leaveTypeModel->Gender = $_POST['gender'] ?? 'Both';
                     $leaveTypeModel->DaysAllowed = (int)$_POST['days'];
                     $leaveTypeModel->IsPaid = isset($_POST['is_paid']) ? 1 : 0;
                     $leaveTypeModel->DeductionRate = (float)($_POST['deduction_rate'] ?? 0);
@@ -719,6 +720,7 @@ class AdminController extends Controller {
                     }
                     $leaveTypeModel->LeaveTypeID = $_POST['id'];
                     $leaveTypeModel->LeaveType = $_POST['name'];
+                    $leaveTypeModel->Gender = $_POST['gender'] ?? 'Both';
                     $leaveTypeModel->DaysAllowed = (int)$_POST['days'];
                     $leaveTypeModel->IsPaid = isset($_POST['is_paid']) ? 1 : 0;
                     $leaveTypeModel->DeductionRate = (float)($_POST['deduction_rate'] ?? 0);

@@ -5,11 +5,8 @@ try {
     $db = new Database();
     $conn = $db->getConnection();
     
-    $stmt = $conn->query("SELECT * FROM leavetypes");
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo "<pre>";
-    print_r($result);
-    echo "</pre>";
+    $conn->exec("UPDATE leavetypes SET Gender = 'Male' WHERE LeaveType = 'Paternity Leave'");
+    echo "Updated Paternity Leave to Male.\n";
     
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage() . "\n";

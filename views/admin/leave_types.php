@@ -60,6 +60,7 @@
             <tr>
                 <th scope="col" class="px-6 py-4">Id</th>
                 <th scope="col" class="px-6 py-4">Leave Type</th>
+                <th scope="col" class="px-6 py-4 text-center">Gender Eligibility</th>
                 <th scope="col" class="px-6 py-4 text-center">Days Allowed</th>
                 <th scope="col" class="px-6 py-4 text-center">Is Paid?</th>
                 <th scope="col" class="px-6 py-4 text-center">Deduction Rate</th>
@@ -87,6 +88,15 @@
                         <?= htmlspecialchars($lt['LeaveType']) ?>
                     </td>
                     <td class="px-6 py-3.5 text-center">
+                        <?php if(($lt['Gender'] ?? 'Both') === 'Both'): ?>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">Both</span>
+                        <?php elseif(($lt['Gender'] ?? 'Both') === 'Male'): ?>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400">Male Only</span>
+                        <?php else: ?>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-pink-50 text-pink-700 dark:bg-pink-950/50 dark:text-pink-400">Female Only</span>
+                        <?php endif; ?>
+                    </td>
+                    <td class="px-6 py-3.5 text-center">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold font-mono bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800">
                             <?= $lt['DaysAllowed'] ?> Days/yr
                         </span>
@@ -109,7 +119,7 @@
                         <?= $lt['DurationMonths'] ?> Months
                     </td>
                     <td class="px-6 py-3.5 text-right space-x-1.5">
-                        <button onclick="editLeaveType(<?= $lt['LeaveTypeID'] ?>, '<?= htmlspecialchars(addslashes($lt['LeaveType'])) ?>', <?= $lt['DaysAllowed'] ?>, <?= $lt['IsPaid'] ? 1 : 0 ?>, <?= $lt['DeductionRate'] ?>, <?= $lt['DurationMonths'] ?>)" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-400 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 inline-flex items-center justify-center transition-colors shadow-sm" title="Edit">
+                        <button onclick="editLeaveType(<?= $lt['LeaveTypeID'] ?>, '<?= htmlspecialchars(addslashes($lt['LeaveType'])) ?>', '<?= htmlspecialchars(addslashes($lt['Gender'] ?? 'Both')) ?>', <?= $lt['DaysAllowed'] ?>, <?= $lt['IsPaid'] ? 1 : 0 ?>, <?= $lt['DeductionRate'] ?>, <?= $lt['DurationMonths'] ?>)" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-400 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 inline-flex items-center justify-center transition-colors shadow-sm" title="Edit">
                             <i class="fa-solid fa-pen text-xs"></i>
                         </button>
                         <?php if(($data['viewMode'] ?? 'active') === 'active'): ?>
@@ -164,6 +174,14 @@
                     </p>
                 </div>
                 <div>
+                    <label for="gender" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Gender Eligibility</label>
+                    <select name="gender" id="gender" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm cursor-pointer">
+                        <option value="Both">Both (Male & Female)</option>
+                        <option value="Male">Male Only</option>
+                        <option value="Female">Female Only</option>
+                    </select>
+                </div>
+                <div>
                     <label for="days" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Days Allowed Per Year</label>
                     <input type="number" name="days" id="days" required min="0" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm" placeholder="12">
                 </div>
@@ -215,6 +233,14 @@
                     </p>
                 </div>
                 <div>
+                    <label for="edit_gender" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Gender Eligibility</label>
+                    <select name="gender" id="edit_gender" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm cursor-pointer">
+                        <option value="Both">Both (Male & Female)</option>
+                        <option value="Male">Male Only</option>
+                        <option value="Female">Female Only</option>
+                    </select>
+                </div>
+                <div>
                     <label for="edit_days" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Days Allowed</label>
                     <input type="number" name="days" id="edit_days" required min="0" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
                 </div>
@@ -243,9 +269,10 @@
 <script>
     const leaveTypesList = <?= json_encode($data['leaveTypes'] ?? []) ?>;
 
-    function editLeaveType(id, name, days, isPaid, deductionRate, durationMonths) {
+    function editLeaveType(id, name, gender, days, isPaid, deductionRate, durationMonths) {
         document.getElementById('edit_id').value = id;
         document.getElementById('edit_name').value = name;
+        document.getElementById('edit_gender').value = gender;
         document.getElementById('edit_days').value = days;
         document.getElementById('edit_is_paid').checked = isPaid === 1;
         document.getElementById('edit_deduction_rate').value = deductionRate;
@@ -296,6 +323,7 @@
     // Handle resetting add modal state when opening
     document.querySelector('button[onclick="document.getElementById(\'addModal\').classList.remove(\'hidden\')"]').addEventListener('click', function() {
         document.getElementById('name').value = '';
+        document.getElementById('gender').value = 'Both';
         document.getElementById('days').value = '';
         document.getElementById('is_paid').checked = false;
         document.getElementById('deduction_rate').value = '0.00';
