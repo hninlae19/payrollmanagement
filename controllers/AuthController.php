@@ -104,10 +104,11 @@ class AuthController extends Controller {
                 }
             }
 
-            // Always show success message for security
-            $this->view('auth/forgot_password', ['title' => 'Forgot Password', 'success' => 'If an active account exists with this email, an admin will process your request.']);
+            // Always show success message and redirect to login
+            $_SESSION['login_success'] = "Password reset requested! An Admin will send your new password via Phone or Email soon.";
+            $this->redirect('/payrollsystem/auth/login');
         } else {
-            $this->redirect('/payrollsystem/auth/forgot_password');
+            $this->redirect('/payrollsystem/auth/login');
         }
     }
 }

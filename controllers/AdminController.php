@@ -1094,28 +1094,37 @@ class AdminController extends Controller {
             $this->validateCsrfToken($_POST['csrf_token'] ?? '');
             
             $empId = $_POST['emp_id'] ?? null;
-            $newPassword = $_POST['new_password'] ?? '';
             
-            if ($empId && strlen($newPassword) >= 6) {
+            if ($empId) {
                 $db = new Database();
                 $conn = $db->getConnection();
                 
-                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                // Get employee email
+                $stmt = $conn->prepare("SELECT Email, FirstName, LastName FROM employee WHERE EmpID = :id");
+                $stmt->execute([':id' => $empId]);
+                $employee = $stmt->fetch(PDO::FETCH_ASSOC);
                 
-                $stmt = $conn->prepare("UPDATE employee SET Password = :password, PasswordResetRequest = 0 WHERE EmpID = :id");
-                $stmt->execute([
-                    ':password' => $hashedPassword,
-                    ':id' => $empId
-                ]);
+                if ($employee) {
+                    $newPassword = bin2hex(random_bytes(4)); // Generates 8 char random hex string
+                    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                    
+                    $stmt = $conn->prepare("UPDATE employee SET Password = :password, PasswordResetRequest = 0, is_first_login = 1 WHERE EmpID = :id");
+                    $stmt->execute([
+                        ':password' => $hashedPassword,
+                        ':id' => $empId
+                    ]);
 
-                // Send notification to the employee
-                require_once __DIR__ . '/../models/Notification.php';
-                $notifModel = new Notification();
-                $notifModel->create($empId, "Your password has been successfully reset by an Administrator.", "info", "/employee/profile", "Password Reset Successful", 1);
-                
-                $_SESSION['reset_success'] = "Password reset successfully. Please share the new password with the employee.";
+                    // Send notification to the employee within the system
+                    require_once __DIR__ . '/../models/Notification.php';
+                    $notifModel = new Notification();
+                    $notifModel->create($empId, "Your password has been successfully reset by an Administrator.", "info", "/employee/profile", "Password Reset Successful", 1);
+                    
+                    $_SESSION['reset_success'] = "Password reset successfully. Temporary password is: <strong>{$newPassword}</strong>";
+                } else {
+                    $_SESSION['reset_error'] = "Employee not found.";
+                }
             } else {
-                $_SESSION['reset_error'] = "Invalid input or password too short.";
+                $_SESSION['reset_error'] = "Invalid input.";
             }
             
             $this->redirect('/payrollsystem/admin/password_resets');

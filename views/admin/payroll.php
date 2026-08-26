@@ -247,19 +247,7 @@ else $currentMonthName = $monthNames[(int)$data['selectedMonth']];
                     </div>
                 </div>
 
-                <div class="mb-5">
-                    <label class="block mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Disbursement Method</label>
-                    <select name="payment_method" required class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 block w-full p-3 shadow-sm cursor-pointer">
-                        <option value="">Select Payment Method</option>
-                        <option value="Cash">Cash</option>
-                        <option value="KBZ Bank">KBZ Bank</option>
-                        <option value="AYA Bank">AYA Bank</option>
-                        <option value="CB Bank">CB Bank</option>
-                        <option value="UAB Bank">UAB Bank</option>
-                        <option value="Wave Pay">Wave Pay</option>
-                        <option value="KBZ Pay">KBZ Pay</option>
-                    </select>
-                </div>
+
                 
                 <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 hover:scale-105 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-circle-check"></i>

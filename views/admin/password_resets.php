@@ -104,17 +104,9 @@ $pending_requests = $data['pending_requests'] ?? [];
                 <div class="mb-4">
                     <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Setting new password for: <strong id="reset_emp_name" class="text-slate-900 dark:text-white"></strong></p>
                     <div class="bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 p-3 rounded-xl text-xs mb-4 border border-indigo-200 dark:border-indigo-800">
-                        <i class="fa-solid fa-circle-info mr-1"></i> Please communicate the new password to the employee manually after resetting.
+                        <i class="fa-solid fa-circle-info mr-1"></i> A secure temporary password will be automatically generated and emailed to the employee.
                     </div>
                     
-                    <label class="block mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">New Password</label>
-                    <div class="flex gap-2">
-                        <input type="text" name="new_password" id="new_password_input" required minlength="6" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
-                        <button type="button" onclick="generatePassword()" class="px-3.5 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors shadow-sm" title="Generate Random">
-                            <i class="fa-solid fa-dice"></i>
-                        </button>
-                    </div>
-                    <span id="reset-password-error" class="text-xs text-rose-500 hidden mt-1 font-bold">Password must be at least 6 characters.</span>
                     <p class="mt-3 text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
                         <i class="fa-solid fa-lock mr-1 text-indigo-500"></i> The employee will be forced to change this password on next login.
                     </p>
@@ -137,39 +129,10 @@ $pending_requests = $data['pending_requests'] ?? [];
 function openResetModal(empId, empName) {
     document.getElementById('reset_emp_id').value = empId;
     document.getElementById('reset_emp_name').textContent = empName;
-    document.getElementById('new_password_input').value = '';
     document.getElementById('resetModal').classList.remove('hidden');
 }
 
 function closeResetModal() {
     document.getElementById('resetModal').classList.add('hidden');
 }
-
-function generatePassword() {
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-    let password = "";
-    for (let i = 0; i < 10; i++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    const pwdInput = document.getElementById('new_password_input');
-    pwdInput.value = password;
-    pwdInput.dispatchEvent(new Event('input'));
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const passwordInput = document.getElementById('new_password_input');
-    const passwordError = document.getElementById('reset-password-error');
-    if (passwordInput && passwordError) {
-        passwordInput.addEventListener('input', function() {
-            const pwdVal = this.value;
-            if (pwdVal.length > 0 && pwdVal.length < 6) {
-                passwordError.classList.remove('hidden');
-                this.classList.add('border-rose-500');
-            } else {
-                passwordError.classList.add('hidden');
-                this.classList.remove('border-rose-500');
-            }
-        });
-    }
-});
 </script>

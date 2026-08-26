@@ -72,6 +72,14 @@
         </div>
         
         <div class="p-8">
+            <?php if(isset($_SESSION['login_success'])): ?>
+                <div class="bg-emerald-50 text-emerald-700 p-3.5 rounded-2xl text-xs font-semibold mb-6 border border-emerald-200 flex items-center gap-2.5 animate__animated animate__fadeIn shadow-sm">
+                    <i class="fa-solid fa-check-circle text-base text-emerald-500"></i>
+                    <span><?= htmlspecialchars($_SESSION['login_success']) ?></span>
+                </div>
+                <?php unset($_SESSION['login_success']); ?>
+            <?php endif; ?>
+
             <?php if(isset($data['error'])): ?>
                 <div class="bg-rose-50 text-rose-700 p-3.5 rounded-2xl text-xs font-semibold mb-6 border border-rose-200 flex items-center gap-2.5 animate__animated animate__shakeX shadow-sm">
                     <i class="fa-solid fa-circle-exclamation text-base text-rose-500"></i>
