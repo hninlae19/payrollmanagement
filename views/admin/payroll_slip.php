@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $data['title'] ?? 'Payroll Slip' ?></title>
+    <title><?= $data['title'] ?? 'Payroll Slip' ?> — Employee Workforce and Payroll Management System</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,13 +72,18 @@ $leaveOnlyDeduction = max(0, $totalDeductions - ($p['total_attendance_deduction'
 <div class="slip-container">
     <div class="border-b border-slate-200 pb-6 mb-6 flex justify-between items-start">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm">
-                    <i class="fa-solid fa-building"></i>
+            <div class="flex items-center gap-3 mb-1">
+                <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-black text-sm shadow-md">
+                    <i class="fa-solid fa-file-invoice-dollar text-base"></i>
                 </span>
-                <h1 class="text-2xl font-extrabold text-slate-900 font-outfit tracking-tight">Enterprise HR</h1>
+                <div>
+                    <h1 class="text-xl font-extrabold text-slate-900 font-outfit tracking-tight leading-none">
+                        Employee Workforce & Payroll
+                    </h1>
+                    <p class="text-[11px] uppercase tracking-wider text-indigo-600 font-bold mt-0.5">Management System</p>
+                </div>
             </div>
-            <p class="text-slate-500 text-xs font-medium">Official Employee Earnings & Settlement Statement</p>
+            <p class="text-slate-500 text-xs font-medium mt-1.5">Official Employee Earnings & Settlement Statement</p>
         </div>
         <div class="text-right">
             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-1 font-mono">
@@ -110,8 +115,12 @@ $leaveOnlyDeduction = max(0, $totalDeductions - ($p['total_attendance_deduction'
                     <span class="font-bold text-slate-900"><?= htmlspecialchars($p['FirstName'] . ' ' . $p['LastName']) ?></span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-slate-500">Department / Position:</span>
-                    <span class="font-semibold text-slate-800"><?= htmlspecialchars(($p['DeptName'] ?? 'N/A') . ' • ' . ($p['PositionName'] ?? 'N/A')) ?></span>
+                    <span class="text-slate-500">Department:</span>
+                    <span class="font-semibold text-slate-800"><?= htmlspecialchars($p['DeptName'] ?? 'N/A') ?></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Position:</span>
+                    <span class="font-semibold text-slate-800"><?= htmlspecialchars($p['PositionName'] ?? 'N/A') ?></span>
                 </div>
                 <div class="flex justify-between pt-1 border-t border-slate-200">
                     <span class="text-slate-500">Working Days / Daily Rate:</span>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $data['title'] ?? 'Forgot Password' ?> — Employee Workforce and Payroll Management System</title>
+    <title><?= $data['title'] ?? 'Admin Login' ?> — Employee Workforce and Payroll Management System</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,25 +15,26 @@
     
     <style>
         :root {
-            --primary: #0284c7;
-            --primary-light: #38bdf8;
-            --primary-soft: #e0f2fe;
-            --secondary: #4f46e5;
+            --primary: #4338ca;
+            --primary-light: #6366f1;
+            --primary-soft: #eef2ff;
+            --accent: #f59e0b;
+            --accent-soft: #fef3c7;
             --emerald: #10b981;
             --emerald-soft: #ecfdf5;
             --rose: #ef4444;
             --rose-soft: #fef2f2;
             
-            --bg-body: #f8fafc;
+            --bg-body: #090d16;
             --bg-card: #ffffff;
             --text-heading: #0f172a;
             --text-body: #334155;
             --text-muted: #64748b;
             --border-light: #e2e8f0;
-            --border-focus: #0284c7;
+            --border-focus: #4f46e5;
             
-            --shadow-card: 0 25px 60px -15px rgba(2, 132, 199, 0.15), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            --shadow-input-focus: 0 0 0 4px rgba(2, 132, 199, 0.18);
+            --shadow-card: 0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            --shadow-input-focus: 0 0 0 4px rgba(99, 102, 241, 0.18);
         }
 
         * {
@@ -54,9 +55,9 @@
             position: relative;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.18) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 60%);
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.25) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.2) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(15, 23, 42, 0.9) 0px, transparent 70%);
             background-attachment: fixed;
         }
 
@@ -67,11 +68,11 @@
         /* Ambient Glow Orbs */
         .glow-orb-1 {
             position: absolute;
-            top: -100px;
-            left: -100px;
+            top: -120px;
+            left: -120px;
             width: 450px;
             height: 450px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0) 70%);
             border-radius: 50%;
             pointer-events: none;
             filter: blur(40px);
@@ -79,11 +80,11 @@
 
         .glow-orb-2 {
             position: absolute;
-            bottom: -100px;
-            right: -100px;
+            bottom: -120px;
+            right: -120px;
             width: 450px;
             height: 450px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0) 70%);
             border-radius: 50%;
             pointer-events: none;
             filter: blur(40px);
@@ -97,7 +98,6 @@
             border-radius: 32px;
             overflow: hidden;
             box-shadow: var(--shadow-card);
-            border: 1px solid var(--border-light);
             display: grid;
             grid-template-columns: 1fr 1.1fr;
             position: relative;
@@ -107,7 +107,7 @@
 
         /* Left Side: Showcase Banner */
         .auth-showcase {
-            background: linear-gradient(145deg, #0284c7 0%, #0369a1 40%, #1e1b4b 100%);
+            background: linear-gradient(145deg, #1e1b4b 0%, #0f172a 60%, #1e1b4b 100%);
             padding: 3.5rem;
             color: #ffffff;
             display: flex;
@@ -115,6 +115,7 @@
             justify-content: space-between;
             position: relative;
             overflow: hidden;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .auth-showcase::before {
@@ -125,8 +126,8 @@
             right: 0;
             bottom: 0;
             background-image: 
-                radial-gradient(circle at 30% 20%, rgba(56, 189, 248, 0.4) 0%, transparent 60%),
-                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.3) 0%, transparent 60%);
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.35) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.25) 0%, transparent 60%);
             pointer-events: none;
         }
 
@@ -147,14 +148,14 @@
             width: 48px;
             height: 48px;
             border-radius: 16px;
-            background: #ffffff;
+            background: linear-gradient(135deg, #6366f1, #4338ca);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.4rem;
-            color: var(--primary);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             overflow: hidden;
         }
 
@@ -172,14 +173,14 @@
         }
 
         .brand-text-title span {
-            color: #bae6fd;
+            color: #818cf8;
         }
 
         .brand-text-sub {
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            color: #e0f2fe;
+            color: #94a3b8;
             font-weight: 700;
         }
 
@@ -192,7 +193,7 @@
         }
 
         .showcase-heading span {
-            background: linear-gradient(135deg, #fef08a 0%, #fde047 50%, #67e8f9 100%);
+            background: linear-gradient(135deg, #a5b4fc 0%, #e0e7ff 50%, #38bdf8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -200,7 +201,7 @@
 
         .showcase-desc {
             font-size: 0.98rem;
-            color: #e0f2fe;
+            color: #cbd5e1;
             line-height: 1.65;
             margin-bottom: 2.5rem;
         }
@@ -218,19 +219,26 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             padding: 0.9rem 1.2rem;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .bullet-item:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(4px);
         }
 
         .bullet-icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.25);
-            color: #ffffff;
+            background: rgba(99, 102, 241, 0.25);
+            color: #a5b4fc;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -245,7 +253,7 @@
 
         .bullet-text p {
             font-size: 0.76rem;
-            color: #bae6fd;
+            color: #94a3b8;
         }
 
         .showcase-bottom {
@@ -262,11 +270,19 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.78rem;
-            color: #e0f2fe;
+            color: #cbd5e1;
             font-weight: 600;
         }
 
-        /* Right Side: Form */
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--emerald);
+            box-shadow: 0 0 10px var(--emerald);
+        }
+
+        /* Right Side: Login Form */
         .auth-form-side {
             padding: 3.5rem;
             display: flex;
@@ -279,13 +295,13 @@
             margin-bottom: 2rem;
         }
 
-        .recovery-badge {
+        .security-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             padding: 0.35rem 0.9rem;
-            background: var(--primary-soft);
-            border: 1px solid #bae6fd;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
             border-radius: 50px;
             color: var(--primary);
             font-size: 0.75rem;
@@ -306,7 +322,6 @@
         .form-subtitle {
             font-size: 0.92rem;
             color: var(--text-muted);
-            line-height: 1.5;
         }
 
         /* Alerts */
@@ -327,7 +342,7 @@
 
         /* Form Controls */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.35rem;
         }
 
         .form-label {
@@ -380,11 +395,61 @@
             color: var(--primary);
         }
 
+        .toggle-pwd {
+            position: absolute;
+            right: 1.1rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-pwd:hover {
+            color: var(--primary);
+        }
+
+        /* Row options */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.8rem;
+            font-size: 0.85rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: var(--text-body);
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .checkbox-label input {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .security-note {
+            color: #64748b;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
         /* Submit Button */
         .btn-submit {
             width: 100%;
             padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #4f46e5 100%);
+            background: linear-gradient(135deg, #3730a3 0%, #4f46e5 50%, #7c3aed 100%);
             color: #ffffff;
             border: none;
             border-radius: 14px;
@@ -397,13 +462,13 @@
             align-items: center;
             justify-content: center;
             gap: 0.6rem;
-            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(2, 132, 199, 0.45);
+            box-shadow: 0 12px 28px rgba(79, 70, 229, 0.45);
         }
 
         .btn-submit:active {
@@ -422,9 +487,27 @@
             font-size: 0.85rem;
         }
 
-        .home-link {
+        .switch-link {
+            color: var(--text-body);
+            font-weight: 500;
+        }
+
+        .switch-link a {
             color: var(--primary);
             font-weight: 700;
+            text-decoration: none;
+            margin-left: 0.3rem;
+            transition: color 0.2s ease;
+        }
+
+        .switch-link a:hover {
+            color: #3730a3;
+            text-decoration: underline;
+        }
+
+        .home-link {
+            color: #94a3b8;
+            font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -434,8 +517,7 @@
         }
 
         .home-link:hover {
-            color: #0369a1;
-            text-decoration: underline;
+            color: var(--text-heading);
         }
 
         /* Animations */
@@ -463,7 +545,7 @@
                 max-width: 520px;
             }
             .auth-showcase {
-                display: none;
+                display: none; /* Mobile view prioritizes clean login */
             }
             .auth-form-side {
                 padding: 2.8rem 2rem;
@@ -483,36 +565,44 @@
             <div class="showcase-top">
                 <a href="/payrollsystem/" class="brand-pill">
                     <div class="brand-icon-box">
-                        <img src="/payrollsystem/assets/img/system_brand_badge.jpg" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=HR&background=0284c7&color=fff'">
+                        <img src="/payrollsystem/assets/img/system_brand_badge.jpg" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=HR&background=4f46e5&color=fff'">
                     </div>
                     <div>
                         <div class="brand-text-title">HR<span>Portal</span></div>
-                        <div class="brand-text-sub">Account Recovery</div>
+                        <div class="brand-text-sub">Administration</div>
                     </div>
                 </a>
 
                 <h2 class="showcase-heading">
-                    Secure Account <span>Assistance</span>
+                    Executive Control & <span>Payroll Oversight</span>
                 </h2>
                 
                 <p class="showcase-desc">
-                    Forgot your portal credentials? Submit your registered work email to notify the system administrator to verify and reset your access.
+                    Comprehensive administration dashboard to verify daily attendance logs, execute monthly salary runs, and manage organizational rules with precision.
                 </p>
 
                 <div class="feature-bullets">
                     <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-bell"></i></div>
+                        <div class="bullet-icon"><i class="fa-solid fa-user-shield"></i></div>
                         <div class="bullet-text">
-                            <h5>Direct Admin Notification</h5>
-                            <p>An instant alert is routed to HR administration</p>
+                            <h5>High-Security Access</h5>
+                            <p>Encrypted session control and role authorization</p>
                         </div>
                     </div>
 
                     <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="bullet-icon"><i class="fa-solid fa-calculator"></i></div>
                         <div class="bullet-text">
-                            <h5>Identity Verification</h5>
-                            <p>Manual security review to ensure credential safety</p>
+                            <h5>Automated Payroll Processing</h5>
+                            <p>One-click bulk salary calculation and slip generation</p>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <div class="bullet-text">
+                            <h5>Leave & Overtime Approvals</h5>
+                            <p>Review staff attendance exceptions in real time</p>
                         </div>
                     </div>
                 </div>
@@ -520,21 +610,22 @@
 
             <div class="showcase-bottom">
                 <div class="live-status">
-                    <i class="fa-solid fa-circle-info" style="color: #38bdf8;"></i>
-                    <span>Employee Recovery Assistance</span>
+                    <div class="pulse-dot"></div>
+                    <span>Administrator Console Active</span>
                 </div>
+                <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">TLS 1.3 Encrypted</span>
             </div>
         </div>
 
-        <!-- Right Side: Forgot Password Form -->
+        <!-- Right Side: Administrator Sign In Form -->
         <div class="auth-form-side">
             <div class="form-header">
-                <div class="recovery-badge">
-                    <i class="fa-solid fa-key"></i>
-                    <span>Password Reset</span>
+                <div class="security-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Restricted Access</span>
                 </div>
-                <h1 class="form-title">Reset Password</h1>
-                <p class="form-subtitle">Enter your registered work email address below to request a password reset from HR.</p>
+                <h1 class="form-title">Admin Sign In</h1>
+                <p class="form-subtitle">Enter your administrative credentials to access portal control.</p>
             </div>
 
             <?php if(isset($data['error'])): ?>
@@ -544,33 +635,56 @@
                 </div>
             <?php endif; ?>
 
-            <form action="/payrollsystem/auth/forgot_password_submit" method="POST" id="recoveryForm">
+            <form action="/payrollsystem/auth/admin_login" method="POST" id="adminForm">
                 <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
 
                 <div class="form-group">
-                    <label for="recoveryEmail" class="form-label">Registered Work Email</label>
+                    <label for="adminEmail" class="form-label">Administrator Email</label>
                     <div class="input-wrap">
                         <i class="fa-solid fa-envelope input-icon"></i>
-                        <input type="email" name="email" id="recoveryEmail" class="form-input" placeholder="you@company.com" required autofocus autocomplete="email">
+                        <input type="email" name="email" id="adminEmail" class="form-input" placeholder="admin@company.com" required autofocus autocomplete="email">
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="adminPassword" class="form-label">Security Password</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" name="password" id="adminPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" id="togglePassword" class="toggle-pwd" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember" id="rememberMe">
+                        <span>Keep session active</span>
+                    </label>
+                    
+                    <!-- Notice: Strictly NO Forgot Password Link for Admin -->
+                    <span class="security-note">
+                        <i class="fa-solid fa-lock-keyhole"></i>
+                        <span>System Audited</span>
+                    </span>
+                </div>
+
                 <button type="submit" id="submitBtn" class="btn-submit">
-                    <span>SEND RESET REQUEST</span>
-                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>AUTHENTICATE & ENTER</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
 
             <div class="auth-footer">
-                <div>
-                    <a href="/payrollsystem/auth/employee" class="home-link">
-                        <i class="fa-solid fa-arrow-left text-xs"></i>
-                        <span>Back to Employee Login</span>
-                    </a>
+                <div class="switch-link">
+                    Staff member?
+                    <a href="/payrollsystem/auth/employee">Switch to Employee Workspace &rarr;</a>
                 </div>
-                <div style="margin-top: 0.25rem;">
-                    <a href="/payrollsystem/" style="color: #94a3b8; text-decoration: none; font-size: 0.8rem;">
-                        Return to Home Overview
+                <div>
+                    <a href="/payrollsystem/" class="home-link">
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                        <span>Back to Home Overview</span>
                     </a>
                 </div>
             </div>
@@ -579,9 +693,22 @@
     </div>
 
     <script>
-        document.getElementById('recoveryForm').addEventListener('submit', function() {
+        // Password toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('adminPassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        togglePassword.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeIcon.classList.toggle('fa-eye', !isPassword);
+            eyeIcon.classList.toggle('fa-eye-slash', isPassword);
+        });
+
+        // Form submit loading
+        document.getElementById('adminForm').addEventListener('submit', function() {
             const btn = document.getElementById('submitBtn');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Submitting Request...</span>';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Authorizing Access...</span>';
             btn.style.opacity = '0.85';
             btn.style.pointerEvents = 'none';
         });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $data['title'] ?? 'Dashboard' ?> — Attendance & Payroll Management System</title>
+    <title><?= $data['title'] ?? 'Dashboard' ?> — Employee Workforce and Payroll Management System</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -278,7 +278,7 @@
             <!-- Logo Image -->
             <div class="relative w-24 h-24 rounded-2xl overflow-hidden shadow-2xl border border-violet-400/40 bg-surface/90 p-1 animate-float">
                 <img src="/payrollsystem/assets/img/system_brand_badge.jpg" 
-                     alt="Attendance & Payroll Management System Logo" 
+                     alt="Employee Workforce and Payroll Management System Logo" 
                      class="w-full h-full object-cover rounded-xl shadow-inner">
             </div>
         </div>
@@ -286,7 +286,7 @@
         <!-- System Title and Loading Status -->
         <div class="text-center space-y-2">
             <h1 class="text-xl md:text-2xl font-extrabold tracking-tight gradient-text font-outfit">
-                Attendance & Payroll
+                Workforce & Payroll
             </h1>
             <p class="text-xs uppercase tracking-[0.25em] text-cyan-400/90 font-bold">
                 Management System
@@ -316,14 +316,14 @@
                     <div class="logo-ring rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-10 h-10 rounded-xl overflow-hidden border border-violet-400/40 bg-surface flex items-center justify-center relative z-10 shadow-lg group-hover:scale-105 transition-transform">
                         <img src="/payrollsystem/assets/img/system_brand_badge.jpg" 
-                             alt="APMS Logo" 
+                             alt="Logo" 
                              class="w-full h-full object-cover">
                     </div>
                 </div>
                 <div class="hidden sm:block">
                     <div class="flex items-center gap-2">
-                        <span class="font-extrabold text-base lg:text-lg gradient-text font-outfit leading-tight tracking-tight">Attendance & Payroll</span>
-                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-gradient-to-r from-violet-600/30 to-cyan-500/30 text-violet-300 border border-violet-400/30 shadow-sm">APMS</span>
+                        <span class="font-extrabold text-base lg:text-lg gradient-text font-outfit leading-tight tracking-tight">Workforce & Payroll</span>
+                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-gradient-to-r from-violet-600/30 to-cyan-500/30 text-violet-300 border border-violet-400/30 shadow-sm">EWPM</span>
                     </div>
                     <div class="text-[10px] text-cyan-400/90 font-semibold tracking-wider uppercase -mt-0.5 flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -546,14 +546,14 @@ $isActive = function($path) use ($currentPath) {
                         'label' => 'Main Portal',
                         'items' => [
                             ['href' => '/payrollsystem/employee', 'icon' => 'fa-chart-pie', 'label' => 'Dashboard', 'exact' => true],
-                            ['href' => '/payrollsystem/employee/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'My Attendance', 'match' => '/attendance'],
+                            ['href' => '/payrollsystem/employee/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'Attendance Record', 'match' => '/attendance'],
                             ['href' => '/payrollsystem/employee/salary_history', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Salary History', 'match' => '/salary_history'],
                         ]
                     ],
                     [
                         'label' => 'Requests & OT',
                         'items' => [
-                            ['href' => '/payrollsystem/employee/leaves', 'icon' => 'fa-calendar-minus', 'label' => 'My Leaves', 'match' => '/leaves'],
+                            ['href' => '/payrollsystem/employee/leaves', 'icon' => 'fa-calendar-minus', 'label' => 'Leave Requests', 'match' => '/leaves'],
                             ['href' => '/payrollsystem/employee/overtime', 'icon' => 'fa-clipboard-list', 'label' => 'Overtime Assign', 'match' => '/overtime'],
                         ]
                     ],

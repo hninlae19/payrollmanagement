@@ -1,5 +1,5 @@
 -- ====================================================================
--- ATTENDANCE & PAYROLL MANAGEMENT SYSTEM (APMS)
+-- EMPLOYEE WORKFORCE & PAYROLL MANAGEMENT SYSTEM (EWPM)
 -- Complete Database Schema with Full Foreign Key Relationships & Seed Data
 -- ====================================================================
 

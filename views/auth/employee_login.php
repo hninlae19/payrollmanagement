@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $data['title'] ?? 'Forgot Password' ?> — Employee Workforce and Payroll Management System</title>
+    <title><?= $data['title'] ?? 'Employee Login' ?> — Employee Workforce and Payroll Management System</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -223,6 +223,12 @@
             padding: 0.9rem 1.2rem;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .bullet-item:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateX(4px);
         }
 
         .bullet-icon {
@@ -266,7 +272,15 @@
             font-weight: 600;
         }
 
-        /* Right Side: Form */
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 10px #4ade80;
+        }
+
+        /* Right Side: Login Form */
         .auth-form-side {
             padding: 3.5rem;
             display: flex;
@@ -279,7 +293,7 @@
             margin-bottom: 2rem;
         }
 
-        .recovery-badge {
+        .workspace-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -306,10 +320,24 @@
         .form-subtitle {
             font-size: 0.92rem;
             color: var(--text-muted);
-            line-height: 1.5;
         }
 
         /* Alerts */
+        .alert-success {
+            background: var(--emerald-soft);
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 0.85rem 1.1rem;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.4s ease;
+        }
+
         .alert-error {
             background: var(--rose-soft);
             border: 1px solid #fecdd3;
@@ -327,7 +355,7 @@
 
         /* Form Controls */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.35rem;
         }
 
         .form-label {
@@ -380,6 +408,59 @@
             color: var(--primary);
         }
 
+        .toggle-pwd {
+            position: absolute;
+            right: 1.1rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-pwd:hover {
+            color: var(--primary);
+        }
+
+        /* Row options */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.8rem;
+            font-size: 0.85rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: var(--text-body);
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .checkbox-label input {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-link:hover {
+            color: #0369a1;
+            text-decoration: underline;
+        }
+
         /* Submit Button */
         .btn-submit {
             width: 100%;
@@ -422,9 +503,27 @@
             font-size: 0.85rem;
         }
 
-        .home-link {
-            color: var(--primary);
+        .switch-link {
+            color: var(--text-body);
+            font-weight: 500;
+        }
+
+        .switch-link a {
+            color: var(--secondary);
             font-weight: 700;
+            text-decoration: none;
+            margin-left: 0.3rem;
+            transition: color 0.2s ease;
+        }
+
+        .switch-link a:hover {
+            color: #3730a3;
+            text-decoration: underline;
+        }
+
+        .home-link {
+            color: #94a3b8;
+            font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -434,8 +533,7 @@
         }
 
         .home-link:hover {
-            color: #0369a1;
-            text-decoration: underline;
+            color: var(--text-heading);
         }
 
         /* Animations */
@@ -448,6 +546,11 @@
                 opacity: 1;
                 transform: scale(1) translateY(0);
             }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes shake {
@@ -463,7 +566,7 @@
                 max-width: 520px;
             }
             .auth-showcase {
-                display: none;
+                display: none; /* Mobile view prioritizes clean login */
             }
             .auth-form-side {
                 padding: 2.8rem 2rem;
@@ -487,32 +590,40 @@
                     </div>
                     <div>
                         <div class="brand-text-title">HR<span>Portal</span></div>
-                        <div class="brand-text-sub">Account Recovery</div>
+                        <div class="brand-text-sub">Employee Workspace</div>
                     </div>
                 </a>
 
                 <h2 class="showcase-heading">
-                    Secure Account <span>Assistance</span>
+                    Effortless Attendance & <span>Salary Access</span>
                 </h2>
                 
                 <p class="showcase-desc">
-                    Forgot your portal credentials? Submit your registered work email to notify the system administrator to verify and reset your access.
+                    Your all-in-one staff workspace to clock daily shifts, track approved overtime, request leaves, and download verified salary slips anytime.
                 </p>
 
                 <div class="feature-bullets">
                     <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-bell"></i></div>
+                        <div class="bullet-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                         <div class="bullet-text">
-                            <h5>Direct Admin Notification</h5>
-                            <p>An instant alert is routed to HR administration</p>
+                            <h5>Quick Time Tracking</h5>
+                            <p>One-tap check-in, check-out, and overtime records</p>
                         </div>
                     </div>
 
                     <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="bullet-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                         <div class="bullet-text">
-                            <h5>Identity Verification</h5>
-                            <p>Manual security review to ensure credential safety</p>
+                            <h5>Instant Pay Slips</h5>
+                            <p>Transparent monthly salary breakdown & PDF downloads</p>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
+                        <div class="bullet-text">
+                            <h5>Leave Management</h5>
+                            <p>Apply for leaves and track approval status live</p>
                         </div>
                     </div>
                 </div>
@@ -520,22 +631,31 @@
 
             <div class="showcase-bottom">
                 <div class="live-status">
-                    <i class="fa-solid fa-circle-info" style="color: #38bdf8;"></i>
-                    <span>Employee Recovery Assistance</span>
+                    <div class="pulse-dot"></div>
+                    <span>Staff Self-Service Active</span>
                 </div>
+                <span style="font-size: 0.75rem; color: #bae6fd; font-weight: 600;">Fast & Secure</span>
             </div>
         </div>
 
-        <!-- Right Side: Forgot Password Form -->
+        <!-- Right Side: Employee Sign In Form -->
         <div class="auth-form-side">
             <div class="form-header">
-                <div class="recovery-badge">
-                    <i class="fa-solid fa-key"></i>
-                    <span>Password Reset</span>
+                <div class="workspace-badge">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Staff Workspace</span>
                 </div>
-                <h1 class="form-title">Reset Password</h1>
-                <p class="form-subtitle">Enter your registered work email address below to request a password reset from HR.</p>
+                <h1 class="form-title">Employee Sign In</h1>
+                <p class="form-subtitle">Welcome back! Sign in to access your workplace dashboard.</p>
             </div>
+
+            <?php if(isset($_SESSION['login_success'])): ?>
+                <div class="alert-success">
+                    <i class="fa-solid fa-circle-check" style="font-size: 1.1rem;"></i>
+                    <span><?= htmlspecialchars($_SESSION['login_success']) ?></span>
+                </div>
+                <?php unset($_SESSION['login_success']); ?>
+            <?php endif; ?>
 
             <?php if(isset($data['error'])): ?>
                 <div class="alert-error">
@@ -544,33 +664,55 @@
                 </div>
             <?php endif; ?>
 
-            <form action="/payrollsystem/auth/forgot_password_submit" method="POST" id="recoveryForm">
+            <form action="/payrollsystem/auth/employee_login" method="POST" id="employeeForm">
                 <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
 
                 <div class="form-group">
-                    <label for="recoveryEmail" class="form-label">Registered Work Email</label>
+                    <label for="empEmail" class="form-label">Employee Email Address</label>
                     <div class="input-wrap">
                         <i class="fa-solid fa-envelope input-icon"></i>
-                        <input type="email" name="email" id="recoveryEmail" class="form-input" placeholder="you@company.com" required autofocus autocomplete="email">
+                        <input type="email" name="email" id="empEmail" class="form-input" placeholder="employee@company.com" required autofocus autocomplete="email">
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="empPassword" class="form-label">Password</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" name="password" id="empPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" id="togglePassword" class="toggle-pwd" aria-label="Toggle password visibility">
+                            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember" id="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+                    
+                    <!-- Employee Forgot Password Link -->
+                    <a href="/payrollsystem/auth/forgot_password" class="forgot-link">
+                        Forgot password?
+                    </a>
+                </div>
+
                 <button type="submit" id="submitBtn" class="btn-submit">
-                    <span>SEND RESET REQUEST</span>
-                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>SIGN IN TO WORKSPACE</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
 
             <div class="auth-footer">
-                <div>
-                    <a href="/payrollsystem/auth/employee" class="home-link">
-                        <i class="fa-solid fa-arrow-left text-xs"></i>
-                        <span>Back to Employee Login</span>
-                    </a>
+                <div class="switch-link">
+                    Administrator?
+                    <a href="/payrollsystem/auth/admin">Access Admin Portal &rarr;</a>
                 </div>
-                <div style="margin-top: 0.25rem;">
-                    <a href="/payrollsystem/" style="color: #94a3b8; text-decoration: none; font-size: 0.8rem;">
-                        Return to Home Overview
+                <div>
+                    <a href="/payrollsystem/" class="home-link">
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                        <span>Back to Home Overview</span>
                     </a>
                 </div>
             </div>
@@ -579,9 +721,22 @@
     </div>
 
     <script>
-        document.getElementById('recoveryForm').addEventListener('submit', function() {
+        // Password toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('empPassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        togglePassword.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeIcon.classList.toggle('fa-eye', !isPassword);
+            eyeIcon.classList.toggle('fa-eye-slash', isPassword);
+        });
+
+        // Form submit loading
+        document.getElementById('employeeForm').addEventListener('submit', function() {
             const btn = document.getElementById('submitBtn');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Submitting Request...</span>';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Signing In...</span>';
             btn.style.opacity = '0.85';
             btn.style.pointerEvents = 'none';
         });
