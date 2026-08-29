@@ -1,6 +1,6 @@
 <?php
 class Router {
-    protected $currentController = 'HomeController';
+    protected $currentController = 'AuthController';
     protected $currentMethod = 'index';
     protected $params = [];
 

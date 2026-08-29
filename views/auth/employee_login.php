@@ -52,7 +52,7 @@
             justify-content: center;
             padding: 2rem 1.5rem;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
             background-image: 
                 radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.18) 0px, transparent 50%),
                 radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
@@ -99,7 +99,8 @@
             box-shadow: var(--shadow-card);
             border: 1px solid var(--border-light);
             display: grid;
-            grid-template-columns: 1fr 1.1fr;
+            grid-template-columns: 1fr;
+            max-width: 520px;
             position: relative;
             z-index: 10;
             animation: fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -581,62 +582,7 @@
 
     <div class="auth-container">
         
-        <!-- Left Side: System Showcase -->
-        <div class="auth-showcase">
-            <div class="showcase-top">
-                <a href="/payrollsystem/" class="brand-pill">
-                    <div class="brand-icon-box">
-                        <img src="/payrollsystem/assets/img/system_brand_badge.jpg" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=HR&background=0284c7&color=fff'">
-                    </div>
-                    <div>
-                        <div class="brand-text-title">HR<span>Portal</span></div>
-                        <div class="brand-text-sub">Employee Workspace</div>
-                    </div>
-                </a>
 
-                <h2 class="showcase-heading">
-                    Effortless Attendance & <span>Salary Access</span>
-                </h2>
-                
-                <p class="showcase-desc">
-                    Your all-in-one staff workspace to clock daily shifts, track approved overtime, request leaves, and download verified salary slips anytime.
-                </p>
-
-                <div class="feature-bullets">
-                    <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <div class="bullet-text">
-                            <h5>Quick Time Tracking</h5>
-                            <p>One-tap check-in, check-out, and overtime records</p>
-                        </div>
-                    </div>
-
-                    <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-                        <div class="bullet-text">
-                            <h5>Instant Pay Slips</h5>
-                            <p>Transparent monthly salary breakdown & PDF downloads</p>
-                        </div>
-                    </div>
-
-                    <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
-                        <div class="bullet-text">
-                            <h5>Leave Management</h5>
-                            <p>Apply for leaves and track approval status live</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-bottom">
-                <div class="live-status">
-                    <div class="pulse-dot"></div>
-                    <span>Staff Self-Service Active</span>
-                </div>
-                <span style="font-size: 0.75rem; color: #bae6fd; font-weight: 600;">Fast & Secure</span>
-            </div>
-        </div>
 
         <!-- Right Side: Employee Sign In Form -->
         <div class="auth-form-side">

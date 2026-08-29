@@ -53,7 +53,7 @@
             justify-content: center;
             padding: 2rem 1.5rem;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
             background-image: 
                 radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.25) 0px, transparent 50%),
                 radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.2) 0px, transparent 50%),
@@ -99,7 +99,8 @@
             overflow: hidden;
             box-shadow: var(--shadow-card);
             display: grid;
-            grid-template-columns: 1fr 1.1fr;
+            grid-template-columns: 1fr;
+            max-width: 520px;
             position: relative;
             z-index: 10;
             animation: fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -560,62 +561,7 @@
 
     <div class="auth-container">
         
-        <!-- Left Side: System Showcase -->
-        <div class="auth-showcase">
-            <div class="showcase-top">
-                <a href="/payrollsystem/" class="brand-pill">
-                    <div class="brand-icon-box">
-                        <img src="/payrollsystem/assets/img/system_brand_badge.jpg" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=HR&background=4f46e5&color=fff'">
-                    </div>
-                    <div>
-                        <div class="brand-text-title">HR<span>Portal</span></div>
-                        <div class="brand-text-sub">Administration</div>
-                    </div>
-                </a>
 
-                <h2 class="showcase-heading">
-                    Executive Control & <span>Payroll Oversight</span>
-                </h2>
-                
-                <p class="showcase-desc">
-                    Comprehensive administration dashboard to verify daily attendance logs, execute monthly salary runs, and manage organizational rules with precision.
-                </p>
-
-                <div class="feature-bullets">
-                    <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-user-shield"></i></div>
-                        <div class="bullet-text">
-                            <h5>High-Security Access</h5>
-                            <p>Encrypted session control and role authorization</p>
-                        </div>
-                    </div>
-
-                    <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-calculator"></i></div>
-                        <div class="bullet-text">
-                            <h5>Automated Payroll Processing</h5>
-                            <p>One-click bulk salary calculation and slip generation</p>
-                        </div>
-                    </div>
-
-                    <div class="bullet-item">
-                        <div class="bullet-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                        <div class="bullet-text">
-                            <h5>Leave & Overtime Approvals</h5>
-                            <p>Review staff attendance exceptions in real time</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-bottom">
-                <div class="live-status">
-                    <div class="pulse-dot"></div>
-                    <span>Administrator Console Active</span>
-                </div>
-                <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">TLS 1.3 Encrypted</span>
-            </div>
-        </div>
 
         <!-- Right Side: Administrator Sign In Form -->
         <div class="auth-form-side">
