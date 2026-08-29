@@ -542,23 +542,26 @@ class AdminController extends Controller {
             $working_hours = 0;
             $calculated_status = $record['Status'];
             
+            // Calculate Working Hours
             if ($record['CheckInTime'] && $record['CheckOutTime']) {
                 $in = strtotime($record['CheckInTime']);
                 $out = strtotime($record['CheckOutTime']);
                 $working_hours = round(abs($out - $in) / 3600, 2);
-                
-                $calculated_status = $attendanceModel->calculateStatus($record['CheckInTime'], $record['CheckOutTime']);
             } elseif ($record['CheckInTime'] && empty($record['CheckOutTime'])) {
                 $in = strtotime($record['CheckInTime']);
                 $now = strtotime(date('H:i:s'));
                 $working_hours = round(abs($now - $in) / 3600, 2);
+            }
+            
+            // Determine Display Status
+            if ($record['Status'] === 'On Leave' || $record['Status'] === 'Absent' || $record['Status'] === 'Half Day') {
+                $calculated_status = $record['Status'];
+            } elseif ($record['CheckInTime'] && $record['CheckOutTime']) {
+                $calculated_status = $attendanceModel->calculateStatus($record['CheckInTime'], $record['CheckOutTime']);
+            } elseif ($record['CheckInTime'] && empty($record['CheckOutTime'])) {
                 $calculated_status = 'Present';
-            } elseif (empty($record['CheckInTime']) && empty($record['CheckOutTime'])) {
+            } else {
                 $calculated_status = 'Absent';
-            } else if ($record['Status'] === 'Absent' || $record['Status'] === 'Full-Day Absence' || $record['Status'] === 'Full-day absent') {
-                $calculated_status = 'Absent';
-            } else if ($record['Status'] === 'Half Day' || $record['Status'] === 'Half-Day Absence' || $record['Status'] === 'Half-day absent') {
-                $calculated_status = 'Half Day';
             }
             
             $ot_hours = $otMap[$record['EmpID'] . '_' . $record['AttendanceDate']] ?? 0;

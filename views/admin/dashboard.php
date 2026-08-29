@@ -1,3 +1,17 @@
+<?php
+if (!function_exists('formatLargeNumber')) {
+    function formatLargeNumber($num) {
+        if ($num >= 1000000000) {
+            return number_format($num / 1000000000, 2) . 'B';
+        } elseif ($num >= 1000000) {
+            return number_format($num / 1000000, 2) . 'M';
+        } elseif ($num >= 1000) {
+            return number_format($num / 1000, 2) . 'K';
+        }
+        return number_format($num, 2);
+    }
+}
+?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- ============ HEADER BANNER ============ -->
@@ -23,7 +37,7 @@
 </div>
 
 <!-- Primary Stats Row -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8" data-aos="fade-up" data-aos-delay="100">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8" data-aos="fade-up">
     
     <!-- Total Employees -->
     <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 shadow-sm">
@@ -46,14 +60,14 @@
         <div class="flex justify-between items-start relative z-10">
             <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Monthly Payroll</p>
-                <h3 class="text-2xl font-black text-slate-900 dark:text-white font-mono" id="stat-payroll"><?= number_format($monthlyPayroll ?? 0, 2) ?> <span class="text-xs font-normal text-slate-500">MMK</span></h3>
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white font-mono" id="stat-payroll"><?= formatLargeNumber($monthlyPayroll ?? 0) ?> <span class="text-xs font-normal text-slate-500">MMK</span></h3>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 flex items-center justify-center text-xl shadow-sm">
                 <i class="fa-solid fa-money-bill-wave"></i>
             </div>
         </div>
         <div class="mt-4 flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400">
-            <span>Bonuses: <span id="stat-bonus" class="text-emerald-600 dark:text-emerald-400 font-mono font-bold"><?= number_format($monthlyBonus ?? 0, 2) ?> MMK</span></span>
+            <span>Bonuses: <span id="stat-bonus" class="text-emerald-600 dark:text-emerald-400 font-mono font-bold"><?= formatLargeNumber($monthlyBonus ?? 0) ?> MMK</span></span>
         </div>
     </div>
 
@@ -98,7 +112,7 @@
 </div>
 
 <!-- Secondary Stats Row (Action Center & Attendance Trend) -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" data-aos="fade-up" data-aos-delay="200">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" data-aos="fade-up">
     
     <!-- Action Center (Pending Items) -->
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
@@ -162,7 +176,7 @@
 </div>
 
 <!-- Bottom Row: Recent Activity & Quick Actions -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" data-aos="fade-up" data-aos-delay="300">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" data-aos="fade-up">
     
     <!-- Recent Attendance Table -->
     <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -207,7 +221,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-3.5 font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
-                                    <?= date('h:i A', strtotime($att['CheckInTime'])) ?>
+                                    <?= !empty($att['CheckInTime']) ? date('h:i A', strtotime($att['CheckInTime'])) : '--' ?>
                                 </td>
                                 <td class="px-6 py-3.5">
                                     <?php if($att['Status'] == 'Present'): ?>
@@ -366,8 +380,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateStat('stat-leave', data.employeesOnLeave);
                 updateStat('stat-pend-leave', data.pendingLeaves);
                 updateStat('stat-pend-resets', data.pendingResets);
-                updateStat('stat-payroll', parseFloat(data.monthlyPayroll).toLocaleString('en-US', {minimumFractionDigits: 2}) + ' MMK');
-                updateStat('stat-bonus', parseFloat(data.monthlyBonus).toLocaleString('en-US', {minimumFractionDigits: 2}) + ' MMK');
+                
+                const formatLargeNumJs = (num) => {
+                    if (num >= 1000000000) return (num / 1000000000).toFixed(2) + 'B';
+                    if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+                    if (num >= 1000) return (num / 1000).toFixed(2) + 'K';
+                    return parseFloat(num).toFixed(2);
+                };
+
+                updateStat('stat-payroll', formatLargeNumJs(parseFloat(data.monthlyPayroll)) + ' MMK');
+                updateStat('stat-bonus', formatLargeNumJs(parseFloat(data.monthlyBonus)) + ' MMK');
 
                 // Update Chart
                 if (window.attendanceChartInstance && data.weeklyData) {
