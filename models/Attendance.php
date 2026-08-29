@@ -73,11 +73,12 @@ class Attendance {
         }
 
         $inTimeStr = date('H:i:s', strtotime($checkInTime));
-        $targetTime = strtotime('09:00:00');
+        $graceTime = strtotime('09:15:59'); // Grace period up to 9:15
+        $baseTime = strtotime('09:00:00');  // Late penalty calculated from 9:00
         $actualTime = strtotime($inTimeStr);
 
-        if ($actualTime > $targetTime) {
-            return (int)floor(($actualTime - $targetTime) / 60);
+        if ($actualTime > $graceTime) {
+            return (int)floor(($actualTime - $baseTime) / 60);
         }
 
         return 0;

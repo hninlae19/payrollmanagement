@@ -291,7 +291,7 @@
             <div class="p-5 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-slate-900 dark:to-slate-800 border border-indigo-200 dark:border-slate-700">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-sky-300">Regular Working Day OT</span>
-                    <span class="px-2.5 py-1 rounded-md text-xs font-black bg-indigo-600 text-white shadow-sm font-mono">1.5× Rate</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-black bg-indigo-600 text-white shadow-sm font-mono">2.0× Rate</span>
                 </div>
                 <div class="text-2xl font-black text-slate-900 dark:text-white font-outfit">5:00 PM – 9:00 PM</div>
                 <div class="text-xs text-slate-600 dark:text-slate-300 mt-2 space-y-1">
@@ -332,7 +332,7 @@
                     <tr>
                         <td class="px-5 py-3.5 font-bold text-slate-900 dark:text-white">Working Day (Mon – Fri)</td>
                         <td class="px-5 py-3.5 font-mono">17:00 – 21:00 (5:00 PM – 9:00 PM)</td>
-                        <td class="px-5 py-3.5 font-mono font-bold text-indigo-600 dark:text-sky-400">1.50×</td>
+                        <td class="px-5 py-3.5 font-mono font-bold text-indigo-600 dark:text-sky-400">2.00×</td>
                         <td class="px-5 py-3.5">Max 4.0h/day • Max 60h/month</td>
                     </tr>
                     <tr>
