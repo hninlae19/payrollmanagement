@@ -57,17 +57,11 @@ class EmployeeController extends Controller {
             $ot_id = $_POST['id'];
             $action = $_POST['action'];
             
-            if ($action === 'accept') {
-                $overtimeModel->accept($ot_id, $emp_id);
-                $_SESSION['flash_success'] = 'Overtime assignment accepted.';
-            } elseif ($action === 'reject') {
-                $overtimeModel->reject($ot_id, $emp_id);
-                $_SESSION['flash_success'] = 'Overtime assignment rejected.';
-            } elseif ($action === 'checkin') {
+            if ($action === 'checkin') {
                 if ($overtimeModel->checkIn($ot_id, $emp_id)) {
                     $_SESSION['flash_success'] = 'Checked in successfully for overtime.';
                 } else {
-                    $_SESSION['flash_error'] = 'Cannot check in yet. Please try again within 10 minutes of your scheduled start time.';
+                    $_SESSION['flash_error'] = 'Cannot check in. You can only check in between 10 minutes before and 10 minutes after your scheduled start time.';
                 }
             }
             header("Location: /payrollsystem/employee/overtime");
@@ -83,7 +77,7 @@ class EmployeeController extends Controller {
         $today = date('Y-m-d');
 
         foreach ($overtimes as $ot) {
-            if ($ot['OvertimeDate'] >= $today && in_array($ot['Status'], ['Accepted', 'Completed', 'OT Full', 'InProgress'])) {
+            if ($ot['OvertimeDate'] >= $today && in_array($ot['Status'], ['Pending', 'Completed', 'OT Full', 'InProgress'])) {
                 $upcoming++;
             }
             if ($ot['Status'] === 'Pending') {

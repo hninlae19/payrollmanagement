@@ -498,6 +498,18 @@ class AdminController extends Controller {
         header('Content-Type: application/json');
         
         $attendanceModel = $this->model('Attendance');
+        
+        if (!empty($_GET['date_start']) && !empty($_GET['date_end'])) {
+            if (strtotime($_GET['date_start']) > strtotime($_GET['date_end'])) {
+                echo json_encode([
+                    'data' => [],
+                    'total' => 0,
+                    'total_pages' => 0,
+                    'error' => 'End Date cannot be earlier than Start Date.'
+                ]);
+                exit;
+            }
+        }
         $employeeModel = $this->model('Employee');
         $departmentModel = $this->model('Department');
         $overtimeModel = $this->model('OvertimeAssign');
@@ -574,8 +586,9 @@ class AdminController extends Controller {
         
         $filtered = array_filter($data, function($item) {
             $match = true;
-            if (!empty($_GET['date_start']) && $item['date'] < $_GET['date_start']) $match = false;
-            if (!empty($_GET['date_end']) && $item['date'] > $_GET['date_end']) $match = false;
+            $itemDate = date('Y-m-d', strtotime($item['date']));
+            if (!empty($_GET['date_start']) && $itemDate < $_GET['date_start']) $match = false;
+            if (!empty($_GET['date_end']) && $itemDate > $_GET['date_end']) $match = false;
             if (!empty($_GET['department_id']) && $item['department_id'] != $_GET['department_id']) $match = false;
             if (!empty($_GET['employee_id']) && $item['employee_id'] != $_GET['employee_id']) $match = false;
             if (!empty($_GET['status'])) {
@@ -771,13 +784,14 @@ class AdminController extends Controller {
                     } elseif (HolidayHelper::isWeekend($otDate)) {
                         $rateMultiplier = 2.0;
                     } else {
-                        $rateMultiplier = 1.5;
+                        $rateMultiplier = 2.0;
                     }
                     
                     if ($_POST['action'] === 'add') {
-                        $today = date('Y-m-d');
-                        if ($otDate < $today) {
-                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('New overtime assignments must be for the current date or a future date.'));
+                        $currentDateTime = new DateTime();
+                        $selectedDateTime = new DateTime("$otDate $startTime");
+                        if ($selectedDateTime < $currentDateTime) {
+                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('New overtime assignments must be for the current date and time or a future date and time.'));
                             return;
                         }
                     }
@@ -824,6 +838,11 @@ class AdminController extends Controller {
                     }
                     $hours = round(($endUnix - $startUnix) / 3600, 2);
                     
+                    if ($startUnix == $endUnix) {
+                        $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Start time and End time cannot be the same.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
+                        return;
+                    }
+
                     if ($isWorkingDay) {
                         $minStart = strtotime("1970-01-01 17:00:00");
                         $maxEnd = strtotime("1970-01-01 21:00:00");
@@ -900,8 +919,8 @@ class AdminController extends Controller {
                         $otYear = date('Y', strtotime($otDate));
                         $otMonth = date('m', strtotime($otDate));
                         $currentMonthlyHours = $overtimeModel->getMonthlyHours($empId, $otYear, $otMonth, $excludeId);
-                        if (($currentMonthlyHours + $hours) > 60) {
-                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode("Overtime assignment failed: Monthly overtime limit of 60 hours exceeded for $empName.") . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
+                        if (($currentMonthlyHours + $hours) > 52) {
+                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode("Overtime assignment failed: Monthly overtime limit of 52 hours exceeded for $empName.") . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                             return;
                         }
                     }

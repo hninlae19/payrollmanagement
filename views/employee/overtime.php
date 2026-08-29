@@ -33,18 +33,7 @@
 <?php endif; ?>
 
 <!-- ============ SUMMARY STATS ============ -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8" data-aos="fade-up" data-aos-delay="50">
-    <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:-translate-y-1 transition-all">
-        <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800 flex items-center justify-center text-lg flex-shrink-0">
-                <i class="fa-solid fa-calendar-check"></i>
-            </div>
-            <div>
-                <p class="text-2xl font-black text-slate-900 dark:text-white font-mono"><?= $data['upcoming'] ?></p>
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Upcoming Shifts</p>
-            </div>
-        </div>
-    </div>
+<div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8" data-aos="fade-up" data-aos-delay="50">
 
     <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:-translate-y-1 transition-all">
         <div class="flex items-center gap-3.5">
@@ -136,8 +125,6 @@
                             <?php
                                 $statusColors = [
                                     'Pending' => 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800',
-                                    'Accepted' => 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800',
-                                    'Rejected' => 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800',
                                     'InProgress' => 'bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800',
                                     'Completed' => 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800',
                                     'NoOT' => 'bg-slate-100 text-slate-700 border border-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600'
@@ -149,25 +136,14 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <?php if ($ot['Status'] === 'Pending'): ?>
-                                <form method="POST" action="/payrollsystem/employee/overtime" class="inline-flex gap-2">
-                                    <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
-                                    <input type="hidden" name="id" value="<?= $ot['OvertimeID'] ?>">
-                                    <button type="submit" name="action" value="reject" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/50 dark:text-rose-300 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800 font-bold text-xs transition-all shadow-sm">Reject</button>
-                                    <button type="submit" name="action" value="accept" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 font-bold text-xs transition-all shadow-sm">Accept</button>
-                                </form>
-                            <?php elseif (in_array($ot['Status'], ['Accepted', 'Approved', 'Assigned'])): ?>
+                            <?php if (in_array($ot['Status'], ['Pending', 'Approved', 'Assigned'])): ?>
                                 <?php 
                                     $rawStart = trim($ot['StartTime'] ?? '');
-                                    $rawEnd = trim($ot['EndTime'] ?? '');
                                     $startTimeTime = (strpos($rawStart, '-') !== false || strpos($rawStart, ' ') !== false) ? strtotime($rawStart) : strtotime($ot['OvertimeDate'] . ' ' . $rawStart);
-                                    $endTimeTime = (strpos($rawEnd, '-') !== false || strpos($rawEnd, ' ') !== false) ? strtotime($rawEnd) : strtotime($ot['OvertimeDate'] . ' ' . $rawEnd);
-                                    if ($endTimeTime <= $startTimeTime) {
-                                        $endTimeTime += 86400; // Overnight overtime
-                                    }
+                                    
                                     $now = time();
-                                    $isWithinWindow = ($now >= ($startTimeTime - 600) && $now <= $endTimeTime);
-                                    $isPast = ($now > $endTimeTime);
+                                    $isWithinWindow = ($now >= ($startTimeTime - 600) && $now <= ($startTimeTime + 600));
+                                    $isPast = ($now > ($startTimeTime + 600));
                                 ?>
                                 <form method="POST" action="/payrollsystem/employee/overtime" class="inline-block">
                                     <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
@@ -175,7 +151,7 @@
                                     <?php if ($isWithinWindow): ?>
                                         <button type="submit" name="action" value="checkin" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold text-xs transition-all shadow-md shadow-indigo-500/25 hover:scale-105">Check In</button>
                                     <?php elseif ($isPast): ?>
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-xs font-semibold">Shift Ended</span>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-xs font-semibold">Missed</span>
                                     <?php else: ?>
                                         <button type="button" class="px-4 py-1.5 rounded-xl bg-slate-100 text-slate-400 border border-slate-200 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700 font-bold text-xs cursor-not-allowed" title="Check-in available at <?= date('h:i A', $startTimeTime - 600) ?>">Check In</button>
                                     <?php endif; ?>

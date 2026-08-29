@@ -469,6 +469,13 @@ document.addEventListener('alpine:init', () => {
         async fetchData(page = 1) {
             if (this.filters.view_type === 'corrections') return;
             
+            if (this.filters.date_start && this.filters.date_end) {
+                if (new Date(this.filters.date_start) > new Date(this.filters.date_end)) {
+                    alert("End Date cannot be earlier than Start Date.");
+                    return;
+                }
+            }
+            
             this.loading = true;
             this.pagination.page = page;
 
@@ -488,9 +495,13 @@ document.addEventListener('alpine:init', () => {
                 const response = await fetch(`/payrollsystem/admin/attendanceApi?${params.toString()}`);
                 const result = await response.json();
                 
-                this.records = result.data;
-                this.pagination.total = result.total;
-                this.pagination.total_pages = result.total_pages;
+                if (result.error) {
+                    alert(result.error);
+                }
+                
+                this.records = result.data || [];
+                this.pagination.total = result.total || 0;
+                this.pagination.total_pages = result.total_pages || 0;
             } catch (error) {
                 console.error('Error fetching attendance data:', error);
                 // Optionally show a toast notification here

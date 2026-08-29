@@ -233,13 +233,11 @@ if (!empty($errorMsg)):
                                     </form>
                                 <?php endif; ?>
                                 
-                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Approved', 'OT Full', 'Completed', 'Cancelled', 'No Show', 'NoOT', 'No OT'])): ?>
+                                <?php if (($ot['Status'] ?? 'Pending') === 'Pending'): ?>
                                 <button onclick="editModal(<?= htmlspecialchars(json_encode($ot)) ?>)" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-400 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center transition-colors shadow-sm" title="Edit">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
-                                <?php endif; ?>
                                 
-                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Completed', 'Approved', 'OT Full', 'Cancelled', 'No Show', 'NoOT', 'No OT', 'Rejected'])): ?>
                                 <form action="/payrollsystem/admin/overtime_assignments" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Cancel this assignment?');">
                                     <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
                                     <input type="hidden" name="action" value="cancel">
@@ -248,14 +246,10 @@ if (!empty($errorMsg)):
                                         <i class="fa-solid fa-ban text-xs"></i>
                                     </button>
                                 </form>
-                                <form action="/payrollsystem/admin/overtime_assignments" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Mark this assignment as No Show?');">
-                                    <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
-                                    <input type="hidden" name="action" value="no_show">
-                                    <input type="hidden" name="id" value="<?= $ot['OvertimeID'] ?>">
-                                    <button type="submit" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600 flex items-center justify-center transition-colors shadow-sm" title="No Show">
-                                        <i class="fa-solid fa-user-slash text-xs"></i>
-                                    </button>
-                                </form>
+                                <?php endif; ?>
+                                
+                                <?php if (!in_array($ot['Status'] ?? 'Pending', ['Pending', 'Completed', 'Approved', 'OT Full'])): ?>
+                                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">View Only</span>
                                 <?php endif; ?>
                             </div>
                         </td>
@@ -446,6 +440,16 @@ if (!empty($errorMsg)):
             return;
         }
 
+        const now = new Date();
+        const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        const startTimeInput = document.getElementById('start_time');
+        if (dateVal === todayStr) {
+            const currentHourMinute = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            startTimeInput.min = currentHourMinute;
+        } else {
+            startTimeInput.removeAttribute('min');
+        }
+
         const workingDay = isWorkingDay(dateVal);
         if (workingDay) {
             dateHint.innerHTML = `<i class="fa-solid fa-clock text-amber-500"></i> <span class="text-amber-600 dark:text-amber-400 font-bold">Working Day: Overtime strictly allowed from 5:00 PM (17:00) to 9:00 PM (21:00). Max 4h.</span>`;
@@ -479,6 +483,17 @@ if (!empty($errorMsg)):
             }
         }
 
+        if (startVal) {
+            const formAction = document.getElementById('formAction').value;
+            const selectedDateTime = new Date(`${dateVal}T${startVal}:00`);
+            if (formAction === 'add' && selectedDateTime < now) {
+                errorText.innerText = "Overtime assignment cannot be scheduled for a past date and time.";
+                errorEl.classList.remove('hidden');
+                saveBtn.disabled = true;
+                return;
+            }
+        }
+
         if (!startVal || !endVal) return;
 
         // 1. Time Window Rule Check
@@ -498,8 +513,16 @@ if (!empty($errorMsg)):
             }
         }
 
-        // 2. End time must be after start time
-        if (endVal <= startVal) {
+        // 2. Start and End time cannot be equal
+        if (startVal === endVal) {
+            errorText.innerText = "Invalid time range: Start time and End time cannot be the same.";
+            errorEl.classList.remove('hidden');
+            saveBtn.disabled = true;
+            return;
+        }
+
+        // 3. End time must be after start time
+        if (endVal < startVal) {
             errorText.innerText = "Invalid time range: End time must be after start time.";
             errorEl.classList.remove('hidden');
             saveBtn.disabled = true;

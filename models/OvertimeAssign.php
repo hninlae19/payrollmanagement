@@ -24,32 +24,23 @@ class OvertimeAssign {
     public function autoUpdateStatuses() {
         $now = date('Y-m-d H:i:s');
 
-        // 1. Pending OT not accepted or rejected 30 minutes before StartTime -> NoOT
+        // 1. Pending OT not checked in by 10 minutes after StartTime -> NoOT
         $query1 = "UPDATE " . $this->table . " 
                    SET Status = 'NoOT' 
-                   WHERE Status = 'Pending' 
-                   AND :now1 >= (StartTime - INTERVAL 30 MINUTE)";
+                   WHERE Status IN ('Pending', 'Assigned') 
+                   AND :now1 > (StartTime + INTERVAL 10 MINUTE)";
         $stmt1 = $this->conn->prepare($query1);
         $stmt1->bindParam(':now1', $now);
         $stmt1->execute();
 
-        // 2. Missed Check-in: Accepted but not checked in by 30 mins after StartTime -> NoOT
+        // 2. Auto-Complete: InProgress and past EndTime -> Completed
         $query2 = "UPDATE " . $this->table . " 
-                   SET Status = 'NoOT' 
-                   WHERE Status IN ('Accepted', 'Assigned') 
-                   AND :now2 > (StartTime + INTERVAL 30 MINUTE)";
+                   SET Status = 'Completed' 
+                   WHERE Status = 'InProgress' 
+                   AND :now2 >= EndTime";
         $stmt2 = $this->conn->prepare($query2);
         $stmt2->bindParam(':now2', $now);
         $stmt2->execute();
-
-        // 3. Auto-Complete: InProgress and past EndTime -> Completed
-        $query3 = "UPDATE " . $this->table . " 
-                   SET Status = 'Completed' 
-                   WHERE Status = 'InProgress' 
-                   AND :now3 >= EndTime";
-        $stmt3 = $this->conn->prepare($query3);
-        $stmt3->bindParam(':now3', $now);
-        $stmt3->execute();
     }
 
     public function getAll() {
@@ -207,25 +198,6 @@ class OvertimeAssign {
         return $stmt->execute();
     }
 
-    public function accept($id, $empId) {
-        $this->autoUpdateStatuses();
-        $query = "UPDATE " . $this->table . " SET Status = 'Accepted' WHERE OvertimeID = :id AND EmpID = :emp_id AND Status = 'Pending'";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':emp_id', $empId);
-        $stmt->execute();
-        return $stmt->rowCount() > 0;
-    }
-
-    public function reject($id, $empId) {
-        $this->autoUpdateStatuses();
-        $query = "UPDATE " . $this->table . " SET Status = 'Rejected' WHERE OvertimeID = :id AND EmpID = :emp_id AND Status = 'Pending'";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':emp_id', $empId);
-        $stmt->execute();
-        return $stmt->rowCount() > 0;
-    }
 
     public function checkIn($id, $empId) {
         $ot = $this->getById($id);
@@ -233,8 +205,8 @@ class OvertimeAssign {
             return false;
         }
 
-        // Allow check-in for Accepted, Approved, or Assigned overtime
-        $allowedStatuses = ['Accepted', 'Approved', 'Assigned'];
+        // Allow check-in for Pending, Approved, or Assigned overtime
+        $allowedStatuses = ['Pending', 'Approved', 'Assigned'];
         if (!in_array($ot['Status'], $allowedStatuses)) {
             return false;
         }
@@ -264,8 +236,8 @@ class OvertimeAssign {
 
         $now = time();
 
-        // Must be within 10 minutes prior to StartTime until EndTime
-        if ($now < ($startTime - 600) || $now > $endTime) {
+        // Must be within 10 minutes prior to StartTime until 10 minutes after StartTime
+        if ($now < ($startTime - 600) || $now > ($startTime + 600)) {
             return false;
         }
 

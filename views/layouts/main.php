@@ -136,29 +136,10 @@
         /* === NAV ITEM === */
         .nav-item {
             position: relative;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 20%;
-            height: 60%;
-            width: 3.5px;
-            background: linear-gradient(to bottom, #6366f1, #4f46e5);
-            border-radius: 0 4px 4px 0;
-            opacity: 0;
-            transition: all 0.2s ease;
-        }
-        .nav-item.active::before { opacity: 1; }
-        .nav-item.active { 
-            background: rgba(99, 102, 241, 0.08);
-            color: #4338ca;
-            font-weight: 700;
-        }
-        .dark .nav-item.active {
-            background: rgba(99, 102, 241, 0.18);
-            color: #ffffff;
+        .nav-item:hover {
+            transform: translateX(3px);
         }
 
         /* === GRADIENT TEXT === */
@@ -522,9 +503,48 @@
 
 <!-- ============ SIDEBAR ============ -->
 <?php
-$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$isActive = function($path) use ($currentPath) {
-    return strpos($currentPath, $path) !== false;
+$reqUri = $_SERVER['REQUEST_URI'] ?? '';
+$reqPath = parse_url($reqUri, PHP_URL_PATH) ?? '';
+$urlParam = $_GET['url'] ?? '';
+$userRole = $_SESSION['role'] ?? 'Admin';
+
+// Normalize current path for robust matching
+$cleanPath = trim($reqPath, '/');
+if (strpos($cleanPath, 'payrollsystem') === 0) {
+    $cleanPath = trim(substr($cleanPath, strlen('payrollsystem')), '/');
+}
+if ($cleanPath === 'index.php' || empty($cleanPath)) {
+    $cleanPath = !empty($urlParam) ? trim($urlParam, '/') : ($userRole === 'Employee' ? 'employee' : 'admin');
+}
+
+// Active checker closure
+$checkActive = function($item) use ($cleanPath) {
+    $match = ltrim($item['match'] ?? '', '/');
+    if (!empty($item['exact'])) {
+        return ($cleanPath === 'admin' 
+             || $cleanPath === 'admin/dashboard' 
+             || $cleanPath === 'admin/index'
+             || $cleanPath === 'employee'
+             || $cleanPath === 'employee/dashboard'
+             || $cleanPath === 'employee/index');
+    }
+    if ($match === 'leaves') {
+        return (strpos($cleanPath, 'leaves') !== false && strpos($cleanPath, 'leave_types') === false);
+    }
+    if ($match === 'employees') {
+        return (strpos($cleanPath, 'employees') !== false || strpos($cleanPath, 'employee_details') !== false || strpos($cleanPath, 'add_employee') !== false) 
+            && strpos($cleanPath, 'employee_salary_history') === false;
+    }
+    if ($match === 'salary_history') {
+        return (strpos($cleanPath, 'salary_history') !== false || strpos($cleanPath, 'payroll_slip') !== false);
+    }
+    if ($match === 'payroll') {
+        return (strpos($cleanPath, 'payroll') !== false || strpos($cleanPath, 'employee_salary_history') !== false);
+    }
+    if (!empty($match)) {
+        return (strpos($cleanPath, $match) !== false);
+    }
+    return false;
 };
 ?>
 
@@ -538,29 +558,98 @@ $isActive = function($path) use ($currentPath) {
 
         <div>
             <!-- Navigation Links -->
-            <nav class="space-y-1">
+            <nav class="space-y-1.5">
             <?php
-            if (($_SESSION['role'] ?? '') === 'Employee') {
+            $navPalettes = [
+                'indigo'  => [
+                    'icon_bg'     => 'bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-sm shadow-indigo-500/30 border border-indigo-400/40',
+                    'icon_active' => 'bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-500/50 ring-2 ring-indigo-300 dark:ring-indigo-500 scale-105',
+                    'row_active'  => 'bg-indigo-50/90 dark:bg-indigo-950/70 text-indigo-900 dark:text-white border-l-4 border-l-indigo-600 dark:border-l-indigo-400 border-y border-r border-indigo-200/80 dark:border-indigo-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-indigo-600 dark:bg-indigo-400'
+                ],
+                'sky'     => [
+                    'icon_bg'     => 'bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-sm shadow-sky-500/30 border border-sky-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-lg shadow-sky-500/50 ring-2 ring-sky-300 dark:ring-sky-500 scale-105',
+                    'row_active'  => 'bg-sky-50/90 dark:bg-sky-950/70 text-sky-900 dark:text-white border-l-4 border-l-sky-500 dark:border-l-sky-400 border-y border-r border-sky-200/80 dark:border-sky-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-sky-500 dark:bg-sky-400'
+                ],
+                'violet'  => [
+                    'icon_bg'     => 'bg-gradient-to-br from-violet-500 to-purple-700 text-white shadow-sm shadow-violet-500/30 border border-violet-400/40',
+                    'icon_active' => 'bg-gradient-to-br from-violet-500 to-purple-700 text-white shadow-lg shadow-violet-500/50 ring-2 ring-violet-300 dark:ring-violet-500 scale-105',
+                    'row_active'  => 'bg-violet-50/90 dark:bg-violet-950/70 text-violet-900 dark:text-white border-l-4 border-l-violet-600 dark:border-l-violet-400 border-y border-r border-violet-200/80 dark:border-violet-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-violet-600 dark:bg-violet-400'
+                ],
+                'emerald' => [
+                    'icon_bg'     => 'bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-sm shadow-emerald-500/30 border border-emerald-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-lg shadow-emerald-500/50 ring-2 ring-emerald-300 dark:ring-emerald-500 scale-105',
+                    'row_active'  => 'bg-emerald-50/90 dark:bg-emerald-950/70 text-emerald-900 dark:text-white border-l-4 border-l-emerald-500 dark:border-l-emerald-400 border-y border-r border-emerald-200/80 dark:border-emerald-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-emerald-500 dark:bg-emerald-400'
+                ],
+                'amber'   => [
+                    'icon_bg'     => 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm shadow-amber-500/30 border border-amber-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/50 ring-2 ring-amber-300 dark:ring-amber-500 scale-105',
+                    'row_active'  => 'bg-amber-50/90 dark:bg-amber-950/70 text-amber-900 dark:text-white border-l-4 border-l-amber-500 dark:border-l-amber-400 border-y border-r border-amber-200/80 dark:border-amber-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-amber-500 dark:bg-amber-400'
+                ],
+                'purple'  => [
+                    'icon_bg'     => 'bg-gradient-to-br from-purple-500 to-indigo-700 text-white shadow-sm shadow-purple-500/30 border border-purple-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-purple-500 to-indigo-700 text-white shadow-lg shadow-purple-500/50 ring-2 ring-purple-300 dark:ring-purple-500 scale-105',
+                    'row_active'  => 'bg-purple-50/90 dark:bg-purple-950/70 text-purple-900 dark:text-white border-l-4 border-l-purple-600 dark:border-l-purple-400 border-y border-r border-purple-200/80 dark:border-purple-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-purple-600 dark:bg-purple-400'
+                ],
+                'rose'    => [
+                    'icon_bg'     => 'bg-gradient-to-br from-rose-500 to-pink-600 text-white shadow-sm shadow-rose-500/30 border border-rose-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-rose-500 to-pink-600 text-white shadow-lg shadow-rose-500/50 ring-2 ring-rose-300 dark:ring-rose-500 scale-105',
+                    'row_active'  => 'bg-rose-50/90 dark:bg-rose-950/70 text-rose-900 dark:text-white border-l-4 border-l-rose-500 dark:border-l-rose-400 border-y border-r border-rose-200/80 dark:border-rose-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-rose-500 dark:bg-rose-400'
+                ],
+                'fuchsia' => [
+                    'icon_bg'     => 'bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white shadow-sm shadow-fuchsia-500/30 border border-fuchsia-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white shadow-lg shadow-fuchsia-500/50 ring-2 ring-fuchsia-300 dark:ring-fuchsia-500 scale-105',
+                    'row_active'  => 'bg-fuchsia-50/90 dark:bg-fuchsia-950/70 text-fuchsia-900 dark:text-white border-l-4 border-l-fuchsia-500 dark:border-l-fuchsia-400 border-y border-r border-fuchsia-200/80 dark:border-fuchsia-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-fuchsia-500 dark:bg-fuchsia-400'
+                ],
+                'teal'    => [
+                    'icon_bg'     => 'bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-sm shadow-teal-500/30 border border-teal-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-lg shadow-teal-500/50 ring-2 ring-teal-300 dark:ring-teal-500 scale-105',
+                    'row_active'  => 'bg-teal-50/90 dark:bg-teal-950/70 text-teal-900 dark:text-white border-l-4 border-l-teal-500 dark:border-l-teal-400 border-y border-r border-teal-200/80 dark:border-teal-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-teal-500 dark:bg-teal-400'
+                ],
+                'yellow'  => [
+                    'icon_bg'     => 'bg-gradient-to-br from-amber-400 to-yellow-500 text-white shadow-sm shadow-amber-400/30 border border-amber-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-amber-400 to-yellow-500 text-white shadow-lg shadow-amber-400/50 ring-2 ring-amber-300 dark:ring-amber-400 scale-105',
+                    'row_active'  => 'bg-amber-50/90 dark:bg-amber-950/70 text-amber-900 dark:text-white border-l-4 border-l-amber-500 dark:border-l-amber-400 border-y border-r border-amber-200/80 dark:border-amber-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-amber-500 dark:bg-amber-400'
+                ],
+                'cyan'    => [
+                    'icon_bg'     => 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-sm shadow-cyan-500/30 border border-cyan-300/40',
+                    'icon_active' => 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-lg shadow-cyan-500/50 ring-2 ring-cyan-300 dark:ring-cyan-500 scale-105',
+                    'row_active'  => 'bg-cyan-50/90 dark:bg-cyan-950/70 text-cyan-900 dark:text-white border-l-4 border-l-cyan-500 dark:border-l-cyan-400 border-y border-r border-cyan-200/80 dark:border-cyan-800/80 shadow-xs font-bold',
+                    'dot'         => 'bg-cyan-500 dark:bg-cyan-400'
+                ]
+            ];
+
+            if ($userRole === 'Employee') {
                 $navSections = [
                     [
                         'label' => 'Main Portal',
                         'items' => [
-                            ['href' => '/payrollsystem/employee', 'icon' => 'fa-chart-pie', 'label' => 'Dashboard', 'exact' => true],
-                            ['href' => '/payrollsystem/employee/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'Attendance Record', 'match' => '/attendance'],
-                            ['href' => '/payrollsystem/employee/salary_history', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Salary History', 'match' => '/salary_history'],
+                            ['href' => '/payrollsystem/employee', 'icon' => 'fa-chart-pie', 'label' => 'Dashboard', 'color' => 'indigo', 'exact' => true],
+                            ['href' => '/payrollsystem/employee/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'Attendance Record', 'color' => 'emerald', 'match' => 'attendance'],
+                            ['href' => '/payrollsystem/employee/salary_history', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Salary History', 'color' => 'teal', 'match' => 'salary_history'],
                         ]
                     ],
                     [
                         'label' => 'Requests & OT',
                         'items' => [
-                            ['href' => '/payrollsystem/employee/leaves', 'icon' => 'fa-calendar-minus', 'label' => 'Leave Requests', 'match' => '/leaves'],
-                            ['href' => '/payrollsystem/employee/overtime', 'icon' => 'fa-clipboard-list', 'label' => 'Overtime Assign', 'match' => '/overtime'],
+                            ['href' => '/payrollsystem/employee/leaves', 'icon' => 'fa-calendar-minus', 'label' => 'Leave Requests', 'color' => 'rose', 'match' => 'leaves'],
+                            ['href' => '/payrollsystem/employee/overtime', 'icon' => 'fa-clipboard-list', 'label' => 'Overtime Assign', 'color' => 'amber', 'match' => 'overtime'],
                         ]
                     ],
                     [
-                        'label' => 'Guidelines & Policies',
+                        'label' => 'Company & Account',
                         'items' => [
-                            ['href' => '/payrollsystem/employee/rules', 'icon' => 'fa-book-bookmark', 'label' => 'Rules & Policies', 'match' => '/rules'],
+                            ['href' => '/payrollsystem/employee/profile', 'icon' => 'fa-user-gear', 'label' => 'My Profile', 'color' => 'cyan', 'match' => 'profile'],
                         ]
                     ]
                 ];
@@ -569,80 +658,85 @@ $isActive = function($path) use ($currentPath) {
                     [
                         'label' => 'Main Console',
                         'items' => [
-                            ['href' => '/payrollsystem/admin', 'icon' => 'fa-chart-pie', 'label' => 'Dashboard', 'exact' => true],
-                            ['href' => '/payrollsystem/admin/rules', 'icon' => 'fa-book-bookmark', 'label' => 'Rules & Policies', 'match' => '/rules'],
+                            ['href' => '/payrollsystem/admin', 'icon' => 'fa-chart-pie', 'label' => 'Dashboard', 'color' => 'indigo', 'exact' => true],
                         ]
                     ],
                     [
                         'label' => 'Organization Management',
                         'items' => [
-                           
-                            ['href' => '/payrollsystem/admin/departments','icon' => 'fa-sitemap', 'label' => 'Departments', 'match' => '/departments'],
-                            ['href' => '/payrollsystem/admin/positions',  'icon' => 'fa-id-badge','label' => 'Positions',   'match' => '/positions'],
-                             ['href' => '/payrollsystem/admin/employees', 'icon' => 'fa-users', 'label' => 'Employees Directory', 'match' => '/employees'],
+                            ['href' => '/payrollsystem/admin/departments', 'icon' => 'fa-sitemap', 'label' => 'Departments', 'color' => 'sky', 'match' => 'departments'],
+                            ['href' => '/payrollsystem/admin/positions',   'icon' => 'fa-id-badge', 'label' => 'Positions', 'color' => 'violet', 'match' => 'positions'],
+                            ['href' => '/payrollsystem/admin/employees',   'icon' => 'fa-users', 'label' => 'Employees', 'color' => 'emerald', 'match' => 'employees'],
                         ]
                     ],
                     [
                         'label' => 'Attendance Management',
                         'items' => [
-                            ['href' => '/payrollsystem/admin/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'Attendance Logs', 'match' => '/attendance'],
+                            ['href' => '/payrollsystem/admin/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'Attendance Logs', 'color' => 'amber', 'match' => 'attendance'],
                         ]
                     ],
                     [
                         'label' => 'Leaves Management',
                         'items' => [
-                            ['href' => '/payrollsystem/admin/leave_types', 'icon' => 'fa-list-check',       'label' => 'Leave Types', 'match' => '/leave_types'],
-                            ['href' => '/payrollsystem/admin/leaves',      'icon' => 'fa-calendar-minus',  'label' => 'Leave Requests', 'match' => '/leaves'],
-                            
+                            ['href' => '/payrollsystem/admin/leave_types', 'icon' => 'fa-list-check', 'label' => 'Leave Types', 'color' => 'purple', 'match' => 'leave_types'],
+                            ['href' => '/payrollsystem/admin/leaves',      'icon' => 'fa-calendar-minus', 'label' => 'Leave Requests', 'color' => 'rose', 'match' => 'leaves'],
                         ]
                     ],
                     [
                         'label' => 'Overtime Operations',
                         'items' => [
-                            ['href' => '/payrollsystem/admin/overtime_assignments','icon' => 'fa-clipboard-list','label' => 'OT Assignments','match' => '/overtime_assignments'],
+                            ['href' => '/payrollsystem/admin/overtime_assignments', 'icon' => 'fa-clipboard-list', 'label' => 'OT Assignments', 'color' => 'fuchsia', 'match' => 'overtime_assignments'],
                         ]
                     ],
                     [
                         'label' => 'Payroll Management',
                         'items' => [
-                             ['href' => '/payrollsystem/admin/bonuses',     'icon' => 'fa-gift',               'label' => 'Bonuses', 'match' => '/bonuses'],
-                            ['href' => '/payrollsystem/admin/payroll',     'icon' => 'fa-file-invoice-dollar','label' => 'Calculate Salary',   'match' => '/payroll'],
-                           
+                            ['href' => '/payrollsystem/admin/bonuses',     'icon' => 'fa-gift', 'label' => 'Bonuses', 'color' => 'yellow', 'match' => 'bonuses'],
+                            ['href' => '/payrollsystem/admin/payroll',     'icon' => 'fa-file-invoice-dollar', 'label' => 'Calculate Salary', 'color' => 'teal', 'match' => 'payroll'],
                         ]
                     ],
                     [
                         'label' => 'Security & Access',
                         'items' => [
-                            ['href' => '/payrollsystem/admin/password_resets', 'icon' => 'fa-key', 'label' => 'Password Resets', 'match' => '/password_resets'],
+                            ['href' => '/payrollsystem/admin/password_resets', 'icon' => 'fa-key', 'label' => 'Password Resets', 'color' => 'cyan', 'match' => 'password_resets'],
                         ]
                     ]
                 ];
             }
+
             foreach ($navSections as $section):
             ?>
                 <div class="pt-3 pb-1">
                     <p class="px-3 text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-400 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
-                        <span class="w-1 h-1 rounded-full bg-indigo-500"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
                         <span><?= $section['label'] ?></span>
                     </p>
+                    <div class="space-y-1">
                     <?php foreach ($section['items'] as $item):
-                        $active = !empty($item['exact'])
-                            ? ($currentPath === $item['href'])
-                            : (!empty($item['match']) && strpos($currentPath . ($_SERVER['QUERY_STRING'] ?? ''), ltrim($item['match'], '/')) !== false);
+                        $colKey = $item['color'] ?? 'indigo';
+                        $palette = $navPalettes[$colKey] ?? $navPalettes['indigo'];
+                        $active = $checkActive($item);
                     ?>
                     <a href="<?= $item['href'] ?>"
-                       class="nav-item <?= $active ? 'active' : '' ?> flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group
-                              <?= $active ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-white border border-indigo-200 dark:border-indigo-700/50 shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent' ?>">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200
-                                    <?= $active ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:bg-indigo-50 dark:group-hover:bg-slate-700' ?>">
-                            <i class="fa-solid <?= $item['icon'] ?> text-xs"></i>
+                       class="nav-item <?= $active ? 'active ' . $palette['row_active'] : 'text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100/90 dark:hover:bg-slate-800/80 border-transparent' ?> flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group border">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <!-- Bright Colored Icon Badge -->
+                            <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 <?= $active ? $palette['icon_active'] : $palette['icon_bg'] ?> group-hover:scale-110 shadow-sm">
+                                <i class="fa-solid <?= $item['icon'] ?> text-xs"></i>
+                            </div>
+                            <!-- Label -->
+                            <span class="tracking-wide truncate <?= $active ? 'font-extrabold text-slate-900 dark:text-white' : 'font-semibold' ?>"><?= $item['label'] ?></span>
                         </div>
-                        <span class="tracking-wide"><?= $item['label'] ?></span>
+
+                        <!-- Active Pulse Dot (No "Selected" Word) -->
                         <?php if ($active): ?>
-                        <div class="ml-auto w-2 h-2 rounded-full bg-indigo-500 dark:bg-sky-400 shadow-sm"></div>
+                            <span class="w-2 h-2 rounded-full <?= $palette['dot'] ?> shadow-sm animate-pulse mr-1 flex-shrink-0"></span>
+                        <?php else: ?>
+                            <i class="fa-solid fa-chevron-right text-[9px] text-slate-300 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all opacity-0 group-hover:opacity-100 mr-1"></i>
                         <?php endif; ?>
                     </a>
                     <?php endforeach; ?>
+                    </div>
                 </div>
             <?php endforeach; ?>
             </nav>
@@ -651,8 +745,8 @@ $isActive = function($path) use ($currentPath) {
         <!-- Bottom Sign Out -->
         <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
             <a href="/payrollsystem/auth/logout"
-               class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-transparent hover:border-rose-200 dark:hover:border-rose-900 transition-all duration-200 group">
-                <div class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/60 flex items-center justify-center text-rose-600 dark:text-rose-400 group-hover:scale-105 transition-transform">
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-800/80 transition-all duration-200 group">
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm shadow-rose-500/30 border border-rose-400/40 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </div>
                 <span>Sign Out</span>
