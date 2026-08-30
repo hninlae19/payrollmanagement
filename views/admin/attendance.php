@@ -15,12 +15,7 @@
                 </h1>
                 <p class="text-indigo-100 text-xs sm:text-sm mt-1">Audit employee biometric clock events, overtime, and work schedule fulfillment.</p>
             </div>
-            <div class="flex gap-2">
-                <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-white text-indigo-700 hover:bg-slate-50 text-xs font-extrabold shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-print text-indigo-600"></i>
-                    <span>Print Log</span>
-                </button>
-            </div>
+            
         </div>
     </div>
 

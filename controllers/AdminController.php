@@ -952,7 +952,8 @@ class AdminController extends Controller {
                         $empStmt->execute([':emp' => $empId]);
                         $basicSalary = $empStmt->fetchColumn() ?: 0;
                         
-                        $dailyRate = $basicSalary / 30;
+                        $daysInMonth = (int)date('t', strtotime($otDate));
+                        $dailyRate = $daysInMonth > 0 ? ($basicSalary / $daysInMonth) : 0;
                         $hourlyRate = $dailyRate / 8;
                         $otAmount = $hours * $hourlyRate * $rateMultiplier;
 
