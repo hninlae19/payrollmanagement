@@ -225,7 +225,7 @@
                     <label for="department_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Department</label>
                     <select name="department_id" id="department_id" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm cursor-pointer">
                         <?php foreach($data['departments'] as $dept): ?>
-                            <option value="<?= $dept['DeptID'] ?>" <?= $dept['DeptID'] == $data['employee']['DeptID'] ? 'selected' : '' ?>><?= htmlspecialchars($dept['DeptName']) ?></option>
+                            <option value="<?= $dept['DeptID'] ?>" <?= $dept['DeptID'] == $data['employee']['DeptID'] ? 'selected' : '' ?>><?= htmlspecialchars($dept['DeptName']) ?><?= (isset($dept['Status']) && $dept['Status'] === 'Inactive') ? ' (Inactive)' : '' ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -233,7 +233,7 @@
                     <label for="position_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Position</label>
                     <select name="position_id" id="position_id" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm cursor-pointer">
                         <?php foreach($data['positions'] as $pos): ?>
-                            <option value="<?= $pos['PositionID'] ?>" data-department-id="<?= $pos['DeptID'] ?>" data-basic-salary="<?= $pos['BasicSalary'] ?? 0 ?>" <?= $pos['PositionID'] == $data['employee']['PositionID'] ? 'selected' : '' ?>><?= htmlspecialchars($pos['PositionName']) ?></option>
+                            <option value="<?= $pos['PositionID'] ?>" data-department-id="<?= $pos['DeptID'] ?>" data-basic-salary="<?= $pos['BasicSalary'] ?? 0 ?>" <?= $pos['PositionID'] == $data['employee']['PositionID'] ? 'selected' : '' ?>><?= htmlspecialchars($pos['PositionName']) ?><?= (isset($pos['Status']) && $pos['Status'] === 'Inactive') ? ' (Inactive)' : '' ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

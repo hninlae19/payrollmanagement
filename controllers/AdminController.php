@@ -463,8 +463,15 @@ class AdminController extends Controller {
             $this->redirect('/payrollsystem/admin/employees');
         }
 
-        $departments = $departmentModel->getAll();
-        $positions = $positionModel->getAll();
+        $allDepartments = $departmentModel->getAll('All');
+        $departments = array_filter($allDepartments, function($d) use ($employee) {
+            return $d['Status'] === 'Active' || $d['DeptID'] == $employee['DeptID'];
+        });
+
+        $allPositions = $positionModel->getAll('All');
+        $positions = array_filter($allPositions, function($p) use ($employee) {
+            return $p['Status'] === 'Active' || $p['PositionID'] == $employee['PositionID'];
+        });
 
         $this->view('layouts/main', [
             'title' => 'Employee Details',

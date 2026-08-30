@@ -192,9 +192,9 @@
 
 
 <!-- Add Modal -->
-<div id="addModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
-    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700 transform transition-all animate__animated animate__fadeInUp">
-        <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+<div id="addModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-4xl w-full shadow-2xl border border-slate-200 dark:border-slate-700 transform transition-all animate__animated animate__fadeInUp flex flex-col max-h-[95vh] overflow-hidden">
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 flex-shrink-0">
             <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5 font-outfit">
                 <i class="fa-solid fa-user-plus text-indigo-500"></i> Add New Employee
             </h3>
@@ -202,7 +202,7 @@
                 <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
-        <form action="/payrollsystem/admin/employees" method="POST" enctype="multipart/form-data" class="p-6 md:p-8">
+        <form action="/payrollsystem/admin/employees" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 overflow-y-auto custom-scrollbar">
             <input type="hidden" name="csrf_token" value="<?= $this->generateCsrfToken() ?>">
             <input type="hidden" name="action" value="add">
             
