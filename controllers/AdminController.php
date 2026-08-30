@@ -1329,7 +1329,8 @@ class AdminController extends Controller {
                         
                         // Check if it's strictly unpaid leave
                         if ($lt['IsPaid'] == 0) {
-                            $leaveDeductionAmount += $daysThisMonth * $dailySalary;
+                            $deductionRate = (float)$lt['DeductionRate'] / 100;
+                            $leaveDeductionAmount += ($daysThisMonth * $dailySalary * $deductionRate);
                             continue;
                         }
 
@@ -1342,7 +1343,8 @@ class AdminController extends Controller {
                         $excessDays = max(0, $daysThisMonth - $available);
                         
                         if ($excessDays > 0) {
-                            $deduction = $excessDays * $dailySalary;
+                            $deductionRate = (float)$lt['DeductionRate'] / 100;
+                            $deduction = $excessDays * $dailySalary * $deductionRate;
                             $leaveDeductionAmount += $deduction;
                         }
                     }

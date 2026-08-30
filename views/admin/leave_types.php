@@ -63,7 +63,7 @@
                 <th scope="col" class="px-6 py-4 text-center">Gender Eligibility</th>
                 <th scope="col" class="px-6 py-4 text-center">Days Allowed</th>
                 <th scope="col" class="px-6 py-4 text-center">Is Paid?</th>
-                <th scope="col" class="px-6 py-4 text-center">Deduction Rate</th>
+                <th scope="col" class="px-6 py-4 text-center">Deduction Rate (%)</th>
                 <th scope="col" class="px-6 py-4 text-center">Req. Duration</th>
                 <th scope="col" class="px-6 py-4 text-right">Actions</th>
             </tr>
@@ -113,7 +113,7 @@
                         <?php endif; ?>
                     </td>
                     <td class="px-6 py-3.5 text-center font-mono font-semibold text-xs text-slate-700 dark:text-slate-300">
-                        <?= number_format($lt['DeductionRate'], 2) ?>x
+                        <?= number_format($lt['DeductionRate'], 2) ?>%
                     </td>
                     <td class="px-6 py-3.5 text-center font-mono font-bold text-xs text-slate-800 dark:text-slate-200">
                         <?= $lt['DurationMonths'] ?> Months
@@ -190,8 +190,8 @@
                     <label for="is_paid" class="ml-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">Compensated / Paid Leave</label>
                 </div>
                 <div>
-                    <label for="deduction_rate" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Deduction Rate Multiplier (if unpaid/exceeded)</label>
-                    <input type="number" step="0.01" name="deduction_rate" id="deduction_rate" value="0.00" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+                    <label for="deduction_rate" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Deduction Rate (%)</label>
+                    <input type="number" step="0.01" min="0" max="100" name="deduction_rate" id="deduction_rate" value="100.00" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
                 </div>
                 <div>
                     <label for="duration_months" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Required Service Duration (Months)</label>
@@ -249,8 +249,8 @@
                     <label for="edit_is_paid" class="ml-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">Compensated / Paid Leave</label>
                 </div>
                 <div>
-                    <label for="edit_deduction_rate" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Deduction Rate Multiplier</label>
-                    <input type="number" step="0.01" name="deduction_rate" id="edit_deduction_rate" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+                    <label for="edit_deduction_rate" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Deduction Rate (%)</label>
+                    <input type="number" step="0.01" min="0" max="100" name="deduction_rate" id="edit_deduction_rate" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
                 </div>
                 <div>
                     <label for="edit_duration_months" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Required Service Duration (Months)</label>
@@ -326,7 +326,7 @@
         document.getElementById('gender').value = 'Both';
         document.getElementById('days').value = '';
         document.getElementById('is_paid').checked = false;
-        document.getElementById('deduction_rate').value = '0.00';
+        document.getElementById('deduction_rate').value = '100.00';
         document.getElementById('duration_months').value = '0';
         document.getElementById('add_leave_error').classList.add('hidden');
         document.getElementById('name').classList.remove('border-rose-500', 'focus:ring-rose-500/20', 'focus:border-rose-500');

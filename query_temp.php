@@ -13,7 +13,3 @@ print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
 
 $stmt = $conn->query("SELECT * FROM leavetypes"); 
 print_r($stmt->fetchAll(PDO::FETCH_ASSOC)); 
-
-$stmt = $conn->prepare("SELECT * FROM payroll WHERE EmpID = :id AND PayrollMonth LIKE 'September%'"); 
-$stmt->execute(['id' => $emp['EmpID']]); 
-print_r($stmt->fetch(PDO::FETCH_ASSOC));

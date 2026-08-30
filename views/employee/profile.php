@@ -1,4 +1,23 @@
-<?php $employee = $data['employee'] ?? []; ?>
+<?php 
+$employee = $data['employee'] ?? []; 
+$joinDate = $employee['JoinDate'] ?? null;
+$lengthOfService = 'N/A';
+$joinDateDisplay = 'N/A';
+if ($joinDate) {
+    $joinDateDisplay = date('F j, Y', strtotime($joinDate));
+    $d1 = new DateTime($joinDate);
+    $d2 = new DateTime();
+    $diff = $d1->diff($d2);
+    
+    $parts = [];
+    if ($diff->y > 0) $parts[] = $diff->y . ' yr' . ($diff->y > 1 ? 's' : '');
+    if ($diff->m > 0) $parts[] = $diff->m . ' mo' . ($diff->m > 1 ? 's' : '');
+    if (empty($parts)) {
+        $parts[] = $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+    }
+    $lengthOfService = implode(', ', $parts);
+}
+?>
 
 <!-- ============ HEADER BANNER ============ -->
 <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600 p-6 lg:p-7 mb-8 shadow-xl" data-aos="fade-down">
@@ -65,6 +84,17 @@
                 <h3 class="text-xl font-extrabold text-slate-900 dark:text-white font-outfit"><?= htmlspecialchars(($employee['FirstName'] ?? '') . ' ' . ($employee['LastName'] ?? '')) ?></h3>
                 <p class="text-indigo-600 dark:text-sky-400 font-bold text-xs mt-0.5"><?= htmlspecialchars($employee['PositionName'] ?? 'Employee') ?></p>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1"><?= htmlspecialchars($employee['DeptName'] ?? 'Department') ?></p>
+                
+                <div class="mt-4 flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 border border-slate-100 dark:border-slate-700/50">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">Joined:</span>
+                        <span class="font-mono font-bold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($joinDateDisplay) ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">Tenure:</span>
+                        <span class="font-mono font-bold text-indigo-600 dark:text-sky-400"><?= htmlspecialchars($lengthOfService) ?></span>
+                    </div>
+                </div>
                 
                 <div class="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-mono">
                     <i class="fa-solid fa-fingerprint text-indigo-500 text-xs"></i>
