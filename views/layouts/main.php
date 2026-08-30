@@ -670,9 +670,9 @@ $checkActive = function($item) use ($cleanPath) {
                         ]
                     ],
                     [
-                        'label' => 'Attendance Management',
+                        'label' => 'Attendance Monitoring',
                         'items' => [
-                            ['href' => '/payrollsystem/admin/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'Attendance Logs', 'color' => 'amber', 'match' => 'attendance'],
+                            ['href' => '/payrollsystem/admin/attendance', 'icon' => 'fa-clock-rotate-left', 'label' => 'Attendance Records', 'color' => 'amber', 'match' => 'attendance'],
                         ]
                     ],
                     [

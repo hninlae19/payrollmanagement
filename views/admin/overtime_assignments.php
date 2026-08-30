@@ -486,11 +486,20 @@ if (!empty($errorMsg)):
         if (startVal) {
             const formAction = document.getElementById('formAction').value;
             const selectedDateTime = new Date(`${dateVal}T${startVal}:00`);
-            if (formAction === 'add' && selectedDateTime < now) {
-                errorText.innerText = "Overtime assignment cannot be scheduled for a past date and time.";
-                errorEl.classList.remove('hidden');
-                saveBtn.disabled = true;
-                return;
+            if (formAction === 'add') {
+                if (selectedDateTime < now) {
+                    errorText.innerText = "Overtime assignment cannot be scheduled for a past date and time.";
+                    errorEl.classList.remove('hidden');
+                    saveBtn.disabled = true;
+                    return;
+                }
+                const diffMs = selectedDateTime - now;
+                if (diffMs < 3600000) { // 3600000 ms = 1 hour
+                    errorText.innerText = "Overtime must be assigned at least 1 hour before the start time.";
+                    errorEl.classList.remove('hidden');
+                    saveBtn.disabled = true;
+                    return;
+                }
             }
         }
 
@@ -529,10 +538,18 @@ if (!empty($errorMsg)):
             return;
         }
 
-        // 3. Maximum 4 Hours Rule
+        // 3. Duration Rules (Min 1 Hour, Max 4 Hours)
         const start = new Date(`2000-01-01T${startVal}`);
         let end = new Date(`2000-01-01T${endVal}`);
         const diffHours = (end - start) / (1000 * 60 * 60);
+        
+        if (diffHours < 1) {
+            errorText.innerText = `Minimum overtime duration rule violated: Overtime must be at least 1 hour (Selected: ${diffHours.toFixed(1)} hrs).`;
+            errorEl.classList.remove('hidden');
+            saveBtn.disabled = true;
+            return;
+        }
+
         if (diffHours > 4) {
             errorText.innerText = `Daily overtime limit exceeded: Maximum allowed is 4 hours (Selected: ${diffHours.toFixed(1)} hrs).`;
             errorEl.classList.remove('hidden');

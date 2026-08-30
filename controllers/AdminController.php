@@ -798,10 +798,17 @@ class AdminController extends Controller {
                     }
                     
                     if ($_POST['action'] === 'add') {
-                        $currentDateTime = new DateTime();
-                        $selectedDateTime = new DateTime("$otDate $startTime");
-                        if ($selectedDateTime < $currentDateTime) {
-                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('New overtime assignments must be for the current date and time or a future date and time.'));
+                        $currentTime = time();
+                        $selectedTime = strtotime("$otDate $startTime");
+                        
+                        if ($selectedTime < $currentTime) {
+                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Cannot assign overtime for a past date or time.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
+                            return;
+                        }
+                        
+                        // Minimum 1-hour advance assignment
+                        if (($selectedTime - $currentTime) < 3600) {
+                            $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Overtime must be assigned at least 1 hour before the start time.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                             return;
                         }
                     }
@@ -843,13 +850,16 @@ class AdminController extends Controller {
                     // Time rules
                     $startUnix = strtotime("1970-01-01 $startTime");
                     $endUnix = strtotime("1970-01-01 $endTime");
-                    if ($endUnix < $startUnix) {
-                        $endUnix += 86400; // overnight
+                    
+                    if ($endUnix <= $startUnix) {
+                        $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: End time must be later than start time.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
+                        return;
                     }
+                    
                     $hours = round(($endUnix - $startUnix) / 3600, 2);
                     
-                    if ($startUnix == $endUnix) {
-                        $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Start time and End time cannot be the same.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
+                    if ($hours < 1) {
+                        $this->redirect('/payrollsystem/admin/overtime_assignments?error=' . urlencode('Overtime assignment failed: Minimum overtime duration is 1 hour.') . '&assign_type_error=' . urlencode($_POST['assign_type'] ?? ''));
                         return;
                     }
 
