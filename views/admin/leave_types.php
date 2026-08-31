@@ -12,7 +12,7 @@
                 </span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-outfit">
-                Leave <span class="gradient-text">Types</span> & Quotas
+                Leave <span class="gradient-text">Types</span> 
             </h1>
             <p class="text-indigo-100 text-xs sm:text-sm mt-1">Define annual leave entitlements, paid status, deduction formulas, and eligibility thresholds.</p>
         </div>

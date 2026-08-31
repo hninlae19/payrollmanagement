@@ -433,9 +433,9 @@ class AdminController extends Controller {
                 $employeeModel->FirstName = $_POST['first_name'];
                 $employeeModel->LastName = $_POST['last_name'];
                 $employeeModel->Gender = $_POST['gender'];
-                // Email is immutable on update
+                // Email and JoinDate are immutable on update
                 $employeeModel->Email = $existingEmployee['Email'];
-                $employeeModel->JoinDate = $_POST['join_date'];
+                $employeeModel->JoinDate = $existingEmployee['JoinDate'];
                 $employeeModel->PhoneNumber = $phone;
                 $employeeModel->Address = $_POST['address'];
                 $employeeModel->PositionID = $_POST['position_id'];

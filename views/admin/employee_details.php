@@ -239,7 +239,7 @@
                 </div>
                 <div>
                     <label for="join_date" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Join Date</label>
-                    <input type="date" name="join_date" id="join_date" value="<?= !empty($data['employee']['JoinDate']) ? date('Y-m-d', strtotime($data['employee']['JoinDate'])) : '' ?>" required class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs shadow-sm">
+                    <input type="date" name="join_date" id="join_date" value="<?= !empty($data['employee']['JoinDate']) ? date('Y-m-d', strtotime($data['employee']['JoinDate'])) : '' ?>" readonly class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-xl focus:outline-none cursor-not-allowed text-xs shadow-sm">
                 </div>
                 <div>
                     <label for="basic_salary" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Basic Salary</label>

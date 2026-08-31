@@ -5,14 +5,14 @@
             <div class="flex items-center gap-2 mb-2">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 border border-white/30 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md">
                     <i class="fa-solid fa-users"></i>
-                    <span>Workforce Directory</span>
+                    <span>Employee Management</span>
                 </span>
                 <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 border border-white/30 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md font-mono">
                     <?= count($data['employees'] ?? []) ?> Staff Members
                 </span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-outfit">
-                Employee <span class="gradient-text">Directory</span>
+                Employee <span class="gradient-text">Information</span>
             </h1>
             <p class="text-indigo-100 text-xs sm:text-sm mt-1">Manage personnel profiles, position allocations, contact records, and system access credentials.</p>
         </div>
@@ -48,10 +48,7 @@
             <a href="?view=active" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all <?= ($data['viewMode'] === 'active') ? 'bg-white dark:bg-slate-600 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200' ?>">Active</a>
             <a href="?view=inactive" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all <?= ($data['viewMode'] === 'inactive') ? 'bg-white dark:bg-slate-600 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200' ?>">Inactive</a>
         </div>
-        <button onclick="window.print()" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-xs flex items-center gap-1.5 shadow-sm" title="Print Directory">
-            <i class="fa-solid fa-print"></i>
-            <span class="hidden sm:inline font-semibold">Print</span>
-        </button>
+        
     </div>
 </div>
 
@@ -270,6 +267,7 @@
                             <div>
                                 <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Email Address (Login ID)</label>
                                 <input type="email" name="email" id="email" required class="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 dark:text-white text-xs shadow-sm">
+                                <span id="email-error" class="text-xs text-rose-500 hidden mt-1">This email address is already in use by another employee.</span>
                             </div>
                             <div>
                                 <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Account Password (Default)</label>
@@ -420,6 +418,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 passwordError.classList.add('hidden');
                 this.classList.remove('border-rose-500');
             }
+        });
+    }
+
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('email-error');
+    if (emailInput && emailError) {
+        let emailTimeout;
+        emailInput.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
+            const emailVal = this.value.trim();
+            if (emailVal === '') {
+                emailError.classList.add('hidden');
+                this.classList.remove('border-rose-500');
+                return;
+            }
+            
+            emailTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch('/payrollsystem/api/check_email?email=' + encodeURIComponent(emailVal));
+                    const data = await res.json();
+                    if (data.exists) {
+                        emailError.classList.remove('hidden');
+                        emailInput.classList.add('border-rose-500');
+                    } else {
+                        emailError.classList.add('hidden');
+                        emailInput.classList.remove('border-rose-500');
+                    }
+                } catch (e) {
+                    console.error("Email check failed", e);
+                }
+            }, 300);
         });
     }
 });

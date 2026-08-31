@@ -84,4 +84,30 @@ class ApiController extends Controller {
 
         echo json_encode(['status' => 'success', 'has_conflict' => count($conflicts) > 0, 'messages' => array_unique($conflicts)]);
     }
+
+    public function check_email() {
+        header('Content-Type: application/json');
+        
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+            return;
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true) ?: $_GET;
+        $email = trim($input['email'] ?? '');
+        
+        if (empty($email)) {
+            echo json_encode(['status' => 'success', 'exists' => false]);
+            return;
+        }
+
+        $db = new Database();
+        $conn = $db->getConnection();
+        
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM employee WHERE Email = :email");
+        $stmt->execute([':email' => $email]);
+        $count = $stmt->fetchColumn();
+
+        echo json_encode(['status' => 'success', 'exists' => $count > 0]);
+    }
 }
