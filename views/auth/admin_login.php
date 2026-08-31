@@ -604,10 +604,6 @@
                 </div>
 
                 <div class="form-options">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="remember" id="rememberMe">
-                        <span>Keep session active</span>
-                    </label>
                     
                     <!-- Notice: Strictly NO Forgot Password Link for Admin -->
                     <span class="security-note">
@@ -627,12 +623,7 @@
                     Staff member?
                     <a href="/payrollsystem/auth/employee">Switch to Employee Workspace &rarr;</a>
                 </div>
-                <div>
-                    <a href="/payrollsystem/" class="home-link">
-                        <i class="fa-solid fa-arrow-left text-xs"></i>
-                        <span>Back to Home Overview</span>
-                    </a>
-                </div>
+                
             </div>
         </div>
 

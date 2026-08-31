@@ -633,10 +633,7 @@
                 </div>
 
                 <div class="form-options">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="remember" id="rememberMe">
-                        <span>Remember me</span>
-                    </label>
+                    
                     
                     <!-- Employee Forgot Password Link -->
                     <a href="/payrollsystem/auth/forgot_password" class="forgot-link">
@@ -655,12 +652,7 @@
                     Administrator?
                     <a href="/payrollsystem/auth/admin">Access Admin Portal &rarr;</a>
                 </div>
-                <div>
-                    <a href="/payrollsystem/" class="home-link">
-                        <i class="fa-solid fa-arrow-left text-xs"></i>
-                        <span>Back to Home Overview</span>
-                    </a>
-                </div>
+                
             </div>
         </div>
 

@@ -76,7 +76,7 @@
                     <option value="Late">Late</option>
                     <option value="Half Day">Half Day</option>
                     <option value="Absent">Absent</option>
-                    <option value="On Leave">On Leave</option>
+                    
                 </select>
             </div>
 

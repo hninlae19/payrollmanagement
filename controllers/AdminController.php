@@ -1405,10 +1405,13 @@ class AdminController extends Controller {
         $payrollModel = $this->model('Payroll');
         $employeeModel = $this->model('Employee');
         $employees = $employeeModel->getAll();
+        $departmentModel = $this->model('Department');
+        $departments = $departmentModel->getAll();
 
         $selectedMonth = $_GET['month'] ?? date('n');
         $selectedYear = $_GET['year'] ?? date('Y');
         $selectedEmpId = $_GET['emp_id'] ?? null;
+        $selectedDeptId = $_GET['department_id'] ?? null;
 
         $payrolls = $payrollModel->getAll();
         
@@ -1418,6 +1421,7 @@ class AdminController extends Controller {
             foreach ($payrolls as $p) {
                 if (strpos($p['PayrollMonth'], (string)$selectedYear) !== false) {
                     if ($selectedEmpId && $p['EmpID'] != $selectedEmpId) continue;
+                    if ($selectedDeptId && $p['DeptID'] != $selectedDeptId) continue;
                     
                     $eid = $p['EmpID'];
                     if (!isset($grouped[$eid])) {
@@ -1454,13 +1458,9 @@ class AdminController extends Controller {
         } elseif ($selectedMonth === 'all') {
             foreach ($payrolls as $p) {
                 if (strpos($p['PayrollMonth'], (string)$selectedYear) !== false) {
-                    if ($selectedEmpId) {
-                        if ($p['EmpID'] == $selectedEmpId) {
-                            $filteredPayrolls[] = $p;
-                        }
-                    } else {
-                        $filteredPayrolls[] = $p;
-                    }
+                    if ($selectedEmpId && $p['EmpID'] != $selectedEmpId) continue;
+                    if ($selectedDeptId && $p['DeptID'] != $selectedDeptId) continue;
+                    $filteredPayrolls[] = $p;
                 }
             }
             
@@ -1479,13 +1479,9 @@ class AdminController extends Controller {
             
             foreach ($payrolls as $p) {
                 if ($p['PayrollMonth'] === $targetMonthStr) {
-                    if ($selectedEmpId) {
-                        if ($p['EmpID'] == $selectedEmpId) {
-                            $filteredPayrolls[] = $p;
-                        }
-                    } else {
-                        $filteredPayrolls[] = $p;
-                    }
+                    if ($selectedEmpId && $p['EmpID'] != $selectedEmpId) continue;
+                    if ($selectedDeptId && $p['DeptID'] != $selectedDeptId) continue;
+                    $filteredPayrolls[] = $p;
                 }
             }
         }
@@ -1509,7 +1505,9 @@ class AdminController extends Controller {
             'selectedMonth' => $selectedMonth,
             'selectedYear' => $selectedYear,
             'employees' => $employees,
+            'departments' => $departments,
             'selectedEmpId' => $selectedEmpId,
+            'selectedDeptId' => $selectedDeptId,
             'viewMode' => $viewMode,
             'selectedEmpName' => $selectedEmpName ?? ''
         ]);

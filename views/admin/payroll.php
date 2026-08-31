@@ -43,6 +43,14 @@ else $currentMonthName = $monthNames[(int)$data['selectedMonth']];
             <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
                 <!-- Filters Form -->
                 <form method="GET" action="/payrollsystem/admin/payroll" class="flex flex-wrap items-center gap-2">
+                    <select name="department_id" onchange="this.form.submit()" class="rounded-xl bg-white text-slate-800 border border-white/40 text-xs font-bold py-2.5 px-3 focus:ring-2 focus:ring-white shadow-sm cursor-pointer">
+                        <option value="">All Departments</option>
+                        <?php foreach($data['departments'] ?? [] as $dept): ?>
+                            <option value="<?= $dept['DeptID'] ?>" <?= ($data['selectedDeptId'] ?? '') == $dept['DeptID'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($dept['DeptName']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                     <select name="emp_id" onchange="this.form.submit()" class="rounded-xl bg-white text-slate-800 border border-white/40 text-xs font-bold py-2.5 px-3 focus:ring-2 focus:ring-white shadow-sm cursor-pointer">
                         <option value="">All Employees</option>
                         <?php foreach($data['employees'] as $emp): ?>
